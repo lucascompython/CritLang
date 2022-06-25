@@ -1,0 +1,28 @@
+﻿i = 1;
+name = "Lucas";
+Write("Hello " + name + "!\n");
+j = i + 1;
+
+if j < i {
+	WriteLine("J is smaller than i");
+}
+else if 4 > 5 {
+	WriteLine("4 is bigger than 5");
+}
+else {
+	WriteLine("ELSE");
+}
+
+#COMMENT
+
+until i > 10 
+{
+	WriteLine("I isn't big eneugh" + i + ".");
+	i = i + 1;
+	
+}
+else {
+	WriteLine("I is already big enough" + i + ".");
+}
+
+WriteLine("I: " + i + ".");

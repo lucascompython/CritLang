@@ -1,0 +1,31 @@
+primes = 0;
+rounds = 1000;
+num = 0;
+
+while num < rounds {
+    ctr = 0;
+    i = 2;
+    break = true;
+    rond = num / 2;
+    while break == true {
+        if num % i == 0 {
+            ctr = ctr + 1;
+            break = false;
+        }
+        if i > num / 2 {
+            break = false
+        }
+        i = i + 1;
+    }
+    ctr;
+    if ctr == 0 {
+        if num != 1 {
+            primes = primes + 1;
+        }
+    }
+    num = num + 1;
+}
+
+
+
+WriteLine("Primes: " + primes);
