@@ -3,7 +3,7 @@
 ## What is Crit?
 Crit is a interpreted dynamic programming language made with C# and [ANTLR4](https://www.antlr.org/) made just because I can.
 This language is still very experimental and is no were to be used for production.
-Why the name? Because in League of Legends, no crit = no bitches.
+Why the name? Because in League of Legends, **no crit = no bitches**.
 The syntax is somewhat similar to Golang's syntax.
 
 
