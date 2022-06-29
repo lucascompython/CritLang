@@ -31,7 +31,13 @@ You can look [here](CritLang/primes.crit) for more "real world" example.
 ## Tips and Tricks
 You can have a else block after a while loop declaration to avoid a if statement.
 To have syntax highligting you can set the language to Golang or Rust, I've tested both and they look fine to me.
-
+This language also has a `until` keyword, which is just like the `while` keyword but with the opposite condition.
+```rust
+until num > 10 {
+    WriteLine(num);
+    num = num + 1;
+}
+```
 
 ## TODOs
 
