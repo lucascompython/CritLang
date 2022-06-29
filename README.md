@@ -35,12 +35,13 @@ To have syntax highligting you can set the language to Golang or Rust, I've test
 
 ## TODOs
 
-- [ ] Add arrays and some more basic data structures.
+- [ ] Add arrays, python-like dictionaries and some more basic data structures.
+- [ ] Add a special block of code to query with [Nanql](https://github.com/lucascompython/NANQL).
+- [ ] Add the hability of making functions.
+- [ ] Make a proper std lib.
 - [ ] Add for loops.
 - [ ] Add local variables.
-- [ ] Add the hability of making functions.
 - [ ] Add a proper break keyword.
-- [ ] Make a proper std lib.
 - [ ] Add readable error messages.
 - [ ] Optimizing the interpreter.
 - [ ] Make a compiler.
