@@ -20,7 +20,7 @@ assignment: IDENTIFIER '=' expression;
 functionCall: IDENTIFIER '(' (expression (',' expression)*)? ')';
 
 expression
-	: constant							#constantExpression
+	: constant	(index)*				#constantExpression
 	| IDENTIFIER						#identifierExpression
 	| functionCall						#functionCallExpression
 	| '(' expression ')'				#parenthesizedExpression
@@ -40,12 +40,14 @@ boolOp: BOOL_OPERATOR;
 
 BOOL_OPERATOR: 'and' | 'or' | 'xor';
 
-constant: INTEGER | FLOAT | STRING | BOOL | NULL;
+constant: INTEGER | FLOAT | STRING | BOOL | array | NULL;
 	
 INTEGER: [0-9]+;
 FLOAT: [0-9]+ '.' [0-9]+;
 STRING: ('"' ~'"'* '"') | ('\'' ~'\''* '\'');
 BOOL: 'true' | 'false';
+array: '[' (constant (',' constant)*)? ']'; 
+index: '[' INTEGER ']';
 NULL: 'null';
 
 

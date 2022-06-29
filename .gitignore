@@ -2,3 +2,6 @@ CritLang/bin
 CritLang/obj
 .vs
 crit.exe
+CritLang/Properties/PublishProfiles/FolderProfile.pubxml
+CritLang/Properties/PublishProfiles/FolderProfile.pubxml.user
+CritLang/CritLang.csproj.user

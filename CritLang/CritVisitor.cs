@@ -1,4 +1,4 @@
-﻿using System.Drawing;
+﻿using System.Globalization;
 using CritLang.Content;
 
 namespace CritLang;
@@ -21,7 +21,11 @@ public class CritVisitor: CritBaseVisitor<object?>
 
 
 
-    private object? Sqrt(object?[] arg)
+
+
+
+
+    private static object? Sqrt(object?[] arg)
     {
 
         if (arg.Length != 1)
@@ -44,7 +48,7 @@ public class CritVisitor: CritBaseVisitor<object?>
 
 
 
-    private object? Write(object?[] args)
+    private static object? Write(object?[] args)
     {
         foreach (var arg in args)
         {
@@ -54,7 +58,7 @@ public class CritVisitor: CritBaseVisitor<object?>
         return null;
     }
 
-    private object? WriteLine(object?[] args)
+    private static object? WriteLine(object?[] args)
     {
         foreach (var arg in args)
         {
@@ -63,6 +67,17 @@ public class CritVisitor: CritBaseVisitor<object?>
 
         return null;
     }
+
+    //TODO Array indexing
+    //public override object? VisitExpression(CritParser.ExpressionContext context)
+    //{
+    //    throw new NotImplementedException("Array indexing is not implemented");
+    //}
+
+    //public override object? VisitConstantExpression(CritParser.ConstantExpressionContext context)
+    //{
+    //    throw new NotImplementedException("Array indexing is not implemented");
+    //}
 
 
     public override object? VisitFunctionCall(CritParser.FunctionCallContext context)
@@ -120,7 +135,9 @@ public class CritVisitor: CritBaseVisitor<object?>
             return int.Parse((i.GetText()));
 
         if (context.FLOAT() is { } f)
-            return float.Parse(f.GetText());
+        {
+            return float.Parse(f.GetText(), CultureInfo.InvariantCulture);
+        }
 
         if (context.STRING() is { } s)
             return s.GetText()[1..^1];
@@ -128,6 +145,8 @@ public class CritVisitor: CritBaseVisitor<object?>
         if (context.BOOL() is { } b)
             return b.GetText() == "true";
 
+        if (context.array() is { } a)
+            return a.GetText()[1..^1].Split(',');
 
         if (context.NULL() is { })
             return null;
@@ -172,98 +191,56 @@ public class CritVisitor: CritBaseVisitor<object?>
     }
 
 
-    private object? Add(object? left, object? right)
-    {
-        if (left is int l && right is int r)
-            return l + r;
-
-        if (left is float lf && right is float rf)
-            return lf + rf;
-
-
-        if (left is int lInt && right is float rFloat)
-            return lInt + rFloat;
-
-        if (left is float lFloat && right is int rInt)
-            return lFloat + rInt;
-
-        if (left is string || right is string)
-            return $"{left}{right}";
-        
-
-        throw new Exception($"Cannot add values of type {left?.GetType()} and {right?.GetType()}.");
-    }
-
-    private object? Subtract(object? left, object? right)
-    {
-        if (left is int l && right is int r)
-            return l - r;
-
-        if (left is float lf && right is float rf)
-            return lf - rf;
-
-        if (left is int lInt && right is float rFloat)
-            return lInt - rFloat;
-
-        if (left is float lFloat && right is int rInt)
-            return lFloat - rInt;
-
-        throw new Exception($"Cannot subtract values of type {left?.GetType()} and {right?.GetType()}.");
-    }
-
-
-    private object? Multiply(object? left, object? right)
-    {
-        if (left is int l && right is int r)
-            return l * r;
-
-        if (left is float lf && right is float rf)
-            return lf * rf;
-
-        if (left is int lInt && right is float rFloat)
-            return lInt * rFloat;
-
-        if (left is float lFloat && right is int rInt)
-            return lFloat * rInt;
-
-        throw new Exception($"Cannot multiply values of type {left?.GetType()} and {right?.GetType()}.");
-    }
-
-    private object? Divide(object? left, object? right)
-    {
-        if (left is int l && right is int r)
-            return l / r;
-
-        if (left is float lf && right is float rf)
-            return lf / rf;
-
-        if (left is int lInt && right is float rFloat)
-            return lInt / rFloat;
-
-        if (left is float lFloat && right is int rInt)
-            return lFloat / rInt;
-
-        throw new Exception($"Cannot divide values of type {left?.GetType()} and {right?.GetType()}.");
-    }
-
-    private object? Modulus(object? left, object? right)
-    {
-        if (left is int l && right is int r)
-            return l % r;
-
-        if (left is float lf && right is float rf)
-            return lf % rf;
-
-        if (left is int lInt && right is float rFloat)
-            return lInt % rFloat;
-
-        if (left is float lFloat && right is int rInt)
-            return lFloat % rInt;
-
-        throw new Exception($"Cannot mod values of type {left?.GetType()} and {right?.GetType()}.");
-    }
-
+    private static object? Add(object? left, object? right) => (left, right) switch
+        {
+            (int l, int r) => l + r,
+            (float lf, float rf) => lf + rf,
+            (int lInt, float rf) => lInt + rf,
+            (float lf, int rInt) => lf + rInt,
+            (string, _) => $"{left}{right}",
+            (_, string) => $"{left}{right}",
+            (_, _) => throw new Exception($"Cannot add values of type {left?.GetType()} and {right?.GetType()}.")
+        };
     
+
+    private static object? Subtract(object? left, object? right) => (left, right) switch
+    {
+        (int l, int r) => l - r,
+        (float lf, float rf) => lf - rf,
+        (int lInt, float rf) => lInt - rf,
+        (float lf, int rInt) => lf - rInt,
+        (_, _) => throw new Exception($"Cannot subtract values of type {left?.GetType()} and {right?.GetType()}.")
+    };
+
+
+    private static object? Multiply(object? left, object? right) => (left, right) switch
+        {
+            (int l, int r) => l * r,
+            (float lf, float rf) => lf * rf,
+            (int lInt, float rf) => lInt * rf,
+            (float lf, int rInt) => lf * rInt,
+            (_, _) => throw new Exception($"Cannot multiply values of type {left?.GetType()} and {right?.GetType()}.")
+        };
+
+    private static object? Divide(object? left, object? right) => (left, right) switch
+    {
+        (int l, int r) => l / r,
+        (float lf, float rf) => lf / rf,
+        (int lInt, float rf) => lInt / rf,
+        (float lf, int rInt) => lf / rInt,
+        (_, _) => throw new Exception($"Cannot divide values of type {left?.GetType()} and {right?.GetType()}.")
+    };
+
+    private static object? Modulus(object? left, object? right) => (left, right) switch
+    {
+        (int l, int r) => l % r,
+        (float lf, float rf) => lf % rf,
+        (int lInt, float rf) => lInt % rf,
+        (float lf, int rInt) => lf % rInt,
+        (_, _) => throw new Exception($"Cannot modulus values of type {left?.GetType()} and {right?.GetType()}.")
+    };
+
+
 
 
     public override object? VisitIfBlock(CritParser.IfBlockContext context)
@@ -288,12 +265,7 @@ public class CritVisitor: CritBaseVisitor<object?>
                 }
             }
             
-            //{
-            //    var hasElse = Visit(context.elseIfBlock());
-            //    if (hasElse is not null)
-            //        Console.WriteLine("elseDASDSADSADNASDON3");
-            //    Visit(context.elseIfBlock());
-            //}
+           
         }
         else
         {
@@ -354,8 +326,8 @@ public class CritVisitor: CritBaseVisitor<object?>
             "!=" => NotEquals(left, right),
             ">" => GreaterThan(left, right),
             "<" => LessThan(left, right),
-            //">=" => GreaterThanOrEqual(left, right),
-            //"<=" => LessThanOrEqual(left, right),
+            ">=" => GreaterThanOrEqual(left, right),
+            "<=" => LessThanOrEqual(left, right),
             _ => throw new NotImplementedException()
 
         };
@@ -364,117 +336,98 @@ public class CritVisitor: CritBaseVisitor<object?>
 
 
 
-    private bool IsEquals(object? left, object? right)
+    private static bool IsEquals(object? left, object? right)
     {
-        if (left is int l && right is int r)
-            return l == r;
-
-        if (left is float lf && right is float rf)
-            return lf == rf;
-
-        if (left is int lInt && right is float rFloat)
-            return lInt == rFloat;
-
-        if (left is float lFloat && right is int rInt)
-            return lFloat == rInt;
-
+        switch (left, right)
+        {
+            case (int l, int r):
+                return l == r;
+            case (float lf, float rf):
+                return lf == rf;
+            case (int lInt, float rFloat):
+                return lInt == rFloat;
+            case (float lFloat, int rInt):
+                return lFloat == rInt;
+        }
         if (left is string || right is string)
             return left?.ToString() == right?.ToString();
 
         if (left is bool || right is bool)
             return left?.ToString() == right?.ToString();
 
-
         throw new Exception($"Cannot compare values of type {left?.GetType()} and {right?.GetType()}.");
     }
 
 
-    private bool NotEquals(object? left, object? right)
+    private static bool NotEquals(object? left, object? right)
     {
-        if (left is int l && right is int r)
-            return l != r;
-
-        if (left is float lf && right is float rf)
-            return lf != rf;
-
-        if (left is int lInt && right is float rFloat)
-            return lInt != rFloat;
-
-        if (left is float lFloat && right is int rInt)
-            return lFloat != rInt;
-
+        switch (left, right)
+        {
+            case (int l, int r):
+                return l != r;
+            case (float lf, float rf):
+                return lf != rf;
+            case (int lInt, float rFloat):
+                return lInt != rFloat;
+            case (float lFloat, int rInt):
+                return lFloat != rInt;
+        }
+        
         if (left is string || right is string)
             return left?.ToString() != right?.ToString();
 
         throw new Exception($"Cannot compare values of type {left?.GetType()} and {right?.GetType()}.");
     }
 
-
-
-    private bool GreaterThan(object? left, object? right)
+    private static bool GreaterThanOrEqual(object? left, object? right) => (left, right) switch
     {
-        
-        if (left is int l && right is int r)
-            return l > r;
-        
-        if (left is float lf && right is float rf)
-            return lf > rf;
-        
-        if (left is int lInt && right is float rFloat)
-            return lInt > rFloat;
-        
-        if (left is float lFloat && right is int rInt)
-            return lFloat > rInt;
-
-        
-        throw new Exception($"Cannot compare values of type {left?.GetType()} and {right?.GetType()}.");
-
-    }
+        (int l, int r) => l >= r,
+        (float lf, float rf) => lf >= rf,
+        (int lInt, float rFloat) => lInt >= rFloat,
+        (float lFloat, int rInt) => lFloat >= rInt,
+        _ => throw new Exception($"Cannot compare values of type {left?.GetType()} and {right?.GetType()}."),
+    };
 
 
-
-    private bool LessThan(object? left, object? right)
+    private static bool LessThanOrEqual(object? left, object? right) => (left, right) switch
     {
-        if (left is int l && right is int r)
-            return l < r;
-
-        if (left is float lf && right is float rf)
-            return lf < rf;
-
-        if (left is int lInt && right is float rFloat)
-            return lInt < rFloat;
-
-        if (left is float lFloat && right is int rInt)
-            return lFloat < rInt;
-
-        throw new Exception($"Cannot compare values of type {left?.GetType()} and {right?.GetType()}.");
-    }
+        (int l, int r) => l <= r,
+        (float lf, float rf) => lf <= rf,
+        (int lInt, float rFloat) => lInt <= rFloat,
+        (float lFloat, int rInt) => lFloat <= rInt,
+        _ => throw new Exception($"Cannot compare values of type {left?.GetType()} and {right?.GetType()}."),
+    };
 
 
 
-
-    private bool IsTrue(object? value)
+    private static bool GreaterThan(object? left, object? right) => (left, right) switch
     {
-        if (value is bool b)
-            return b;
-
-        if (value is int i)
-            return i != 0;
-
-        if (value is float f)
-            return f != 0;
-
-        if (value is string s)
-            return s.Length != 0;
+        (int l, int r) => l > r,
+        (float lf, float rf) => lf > rf,
+        (int lInt, float rFloat) => lInt > rFloat,
+        (float lFloat, int rInt) => lFloat > rInt,
+        _ => throw new Exception($"Cannot compare values of type {left?.GetType()} and {right?.GetType()}."),
+    };
 
 
-        throw new Exception($"Value is not boolean.");
-    }
-    private bool IsFalse(object? value) => !IsTrue(value);
+    private static bool LessThan(object? left, object? right) => (left, right) switch
+    {
+        (int l, int r) => l < r,
+        (float lf, float rf) => lf < rf,
+        (int lInt, float rFloat) => lInt < rFloat,
+        (float lFloat, int rInt) => lFloat < rInt,
+        _ => throw new Exception($"Cannot compare values of type {left?.GetType()} and {right?.GetType()}.")
+    };
+    
+    private static bool IsTrue(object? value) => value switch
+    {
+        bool b => b,
+        int i => i != 0,
+        float f => f != 0,
+        string s => s.Length != 0,
+        _ => throw new Exception($"Value is not boolean.")
+    };
 
-
-
-
-
+    private static bool IsFalse(object? value) => !IsTrue(value);
 
 }
