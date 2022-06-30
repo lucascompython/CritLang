@@ -17,6 +17,7 @@ public class CritVisitor: CritBaseVisitor<object?>
 
         Variables["Write"] = new Func<object?[], object?>(Write);
         Variables["WriteLine"] = new Func<object?[], object?>(WriteLine);
+        Variables["Sum"] = new Func<object?[], object?>(SumArr);
     }
 
 
@@ -24,26 +25,31 @@ public class CritVisitor: CritBaseVisitor<object?>
 
 
 
+    private static object? SumArr(object?[] args)
+    {
+        if (args.Length is 0 or not 1)
+            throw new Exception("Sum expects 1 argument");
+
+        if (args[0] is object[] objArr)
+            return (float)objArr.Sum(Convert.ToDouble);
+        
+        throw new Exception("Sum: Argument is not a valid array.");
+    }
+    
+
 
     private static object? Sqrt(object?[] arg)
     {
 
         if (arg.Length != 1)
-        {
             throw new Exception("Sqrt takes one argument");
-        }
 
-
-        if (arg[0] is int d)
+        return arg[0] switch
         {
-            return Math.Sqrt(Convert.ToDouble(d));
-        }
-        if (arg[0] is float f)
-        {
-            return Math.Sqrt(f);
-        }
-
-        throw new Exception("Sqrt takes one integer ot float argument");
+            int d => Math.Sqrt(Convert.ToDouble(d)),
+            float f => Math.Sqrt(f),
+            _ => throw new Exception("Sqrt takes one integer ot float argument")
+        };
     }
 
 
@@ -52,9 +58,14 @@ public class CritVisitor: CritBaseVisitor<object?>
     {
         foreach (var arg in args)
         {
+            if (arg is object[] objArr)
+            {
+                foreach (var obj in objArr)
+                    Console.Write(obj);
+                continue;
+            }
             Console.Write(arg);
         }
-
         return null;
     }
 
@@ -62,9 +73,14 @@ public class CritVisitor: CritBaseVisitor<object?>
     {
         foreach (var arg in args)
         {
+            if (arg is object[] objArr)
+            {
+                foreach (var obj in objArr)
+                    Console.WriteLine(obj);
+                continue;
+            } 
             Console.WriteLine(arg);
         }
-
         return null;
     }
 
@@ -135,10 +151,8 @@ public class CritVisitor: CritBaseVisitor<object?>
             return int.Parse((i.GetText()));
 
         if (context.FLOAT() is { } f)
-        {
             return float.Parse(f.GetText(), CultureInfo.InvariantCulture);
-        }
-
+        
         if (context.STRING() is { } s)
             return s.GetText()[1..^1];
 
@@ -146,7 +160,22 @@ public class CritVisitor: CritBaseVisitor<object?>
             return b.GetText() == "true";
 
         if (context.array() is { } a)
-            return a.GetText()[1..^1].Split(',');
+        {
+            string[] strArr = a.GetText()[1..^1].Split(',');
+            object[] anyArr = new object[strArr.Length];
+            int index = 0;
+            foreach (string element in strArr)
+            {
+                if (element.StartsWith('"') && element.EndsWith('"'))
+                    anyArr[index] = element[1..^1];
+                //else if (element.StartsWith('[') && element.EndsWith(']'))
+                //    throw new Exception("Array indexing is not implemented");
+                else
+                    anyArr[index] = int.TryParse(element, out int outi) ? outi : float.Parse(element, CultureInfo.InvariantCulture);
+                index++;
+            }
+            return anyArr;
+        }
 
         if (context.NULL() is { })
             return null;
@@ -192,15 +221,15 @@ public class CritVisitor: CritBaseVisitor<object?>
 
 
     private static object? Add(object? left, object? right) => (left, right) switch
-        {
-            (int l, int r) => l + r,
-            (float lf, float rf) => lf + rf,
-            (int lInt, float rf) => lInt + rf,
-            (float lf, int rInt) => lf + rInt,
-            (string, _) => $"{left}{right}",
-            (_, string) => $"{left}{right}",
-            (_, _) => throw new Exception($"Cannot add values of type {left?.GetType()} and {right?.GetType()}.")
-        };
+    {
+        (int l, int r) => l + r,
+        (float lf, float rf) => lf + rf,
+        (int lInt, float rf) => lInt + rf,
+        (float lf, int rInt) => lf + rInt,
+        (string, _) => $"{left}{right}",
+        (_, string) => $"{left}{right}",
+        (_, _) => throw new Exception($"Cannot add values of type {left?.GetType()} and {right?.GetType()}.")
+    };
     
 
     private static object? Subtract(object? left, object? right) => (left, right) switch
@@ -214,13 +243,13 @@ public class CritVisitor: CritBaseVisitor<object?>
 
 
     private static object? Multiply(object? left, object? right) => (left, right) switch
-        {
-            (int l, int r) => l * r,
-            (float lf, float rf) => lf * rf,
-            (int lInt, float rf) => lInt * rf,
-            (float lf, int rInt) => lf * rInt,
-            (_, _) => throw new Exception($"Cannot multiply values of type {left?.GetType()} and {right?.GetType()}.")
-        };
+    {
+        (int l, int r) => l * r,
+        (float lf, float rf) => lf * rf,
+        (int lInt, float rf) => lInt * rf,
+        (float lf, int rInt) => lf * rInt,
+        (_, _) => throw new Exception($"Cannot multiply values of type {left?.GetType()} and {right?.GetType()}.")
+    };
 
     private static object? Divide(object? left, object? right) => (left, right) switch
     {
