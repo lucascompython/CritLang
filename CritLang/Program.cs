@@ -10,6 +10,11 @@ foreach (var arg in args)
         Console.WriteLine("Usage: critlang [file]");
         Environment.Exit(0);
     }
+    else if (new[] { "-v", "--version" }.Contains(arg))
+    {
+        Console.WriteLine("CritLang v0.1.2-beta");
+        Environment.Exit(0);
+    }
     else if (arg.StartsWith("-"))
     {
         Console.WriteLine("Unknown option: " + arg);

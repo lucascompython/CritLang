@@ -18,16 +18,30 @@ public class CritVisitor: CritBaseVisitor<object?>
         Variables["Write"] = new Func<object?[], object?>(Write);
         Variables["WriteLine"] = new Func<object?[], object?>(WriteLine);
         Variables["Sum"] = new Func<object?[], object?>(SumArr);
+        Variables["Add"] = new Func<object?[], object?>(AddArr);
     }
 
 
 
 
 
+    private static object? AddArr(object?[] args)
+    {
+        if (args.Length is not 2)
+            throw new Exception("Add expects 2 argument");
+
+        if (args[0] is object[] objArr)
+        {
+            Console.WriteLine(objArr);
+        }
+
+        return null;
+    }
+
 
     private static object? SumArr(object?[] args)
     {
-        if (args.Length is 0 or not 1)
+        if (args.Length is not 1)
             throw new Exception("Sum expects 1 argument");
 
         if (args[0] is object[] objArr)
@@ -36,7 +50,7 @@ public class CritVisitor: CritBaseVisitor<object?>
         throw new Exception("Sum: Argument is not a valid array.");
     }
     
-
+    
 
     private static object? Sqrt(object?[] arg)
     {
@@ -92,8 +106,10 @@ public class CritVisitor: CritBaseVisitor<object?>
 
     //public override object? VisitConstantExpression(CritParser.ConstantExpressionContext context)
     //{
-    //    throw new NotImplementedException("Array indexing is not implemented");
+    //    return base.VisitConstantExpression(context);
     //}
+
+    
 
 
     public override object? VisitFunctionCall(CritParser.FunctionCallContext context)
@@ -106,7 +122,7 @@ public class CritVisitor: CritBaseVisitor<object?>
         
 
         
-        if (!(Variables[name] is Func<object?[], object?> func))
+        if (Variables[name] is not Func<object?[], object?> func)
             throw new Exception($"Function {name} is not a function");
 
 
@@ -123,8 +139,24 @@ public class CritVisitor: CritBaseVisitor<object?>
 
         var value = Visit(context.expression());
 
-
-        Variables[varName] = value;
+        if (varName.Contains('[') && varName.Contains(']'))
+        {
+            string varWithoutIndex = varName.Replace("[", string.Empty).Replace("]", string.Empty);
+            char index = varWithoutIndex[^1];
+            //Variables[varWithoutIndex[..^1]]?[int.Parse(index.ToString())] = value;
+            //Console.WriteLine(Variables[varWithoutIndex[..^1]]?[int.Parse(index.ToString())]);
+            var variable = Variables[varWithoutIndex[..^1]];
+            if (variable is not object[] vO) return null;
+            foreach (var ola in vO)
+            {
+                Console.WriteLine(ola);
+            }
+            vO[int.Parse(index.ToString())] = value!;
+        }
+        else
+        {
+            Variables[varName] = value;
+        }
         
         
         return null;
@@ -134,11 +166,36 @@ public class CritVisitor: CritBaseVisitor<object?>
     public override object? VisitIdentifierExpression(CritParser.IdentifierExpressionContext context)
     {
         var varName = context.IDENTIFIER().GetText();
+        
+        if (varName.Contains('[') && varName.Contains(']'))
+        {
+
+            string[] variableHelper = varName.Replace("]", string.Empty).Split('[');
+            string varWithoutIndex = variableHelper[0];
+            string index = variableHelper[1];
+            
+
+            var variable = Variables[varWithoutIndex];
+            if (int.TryParse(index, out _))
+            {
+                if (variable is object[] vO)
+                    return vO[int.Parse(index)];
+            }
+            else if (Variables.ContainsKey(varWithoutIndex))
+            {
+                var value = Variables[index];
+                if (variable is object[] vO)
+                    return vO[int.Parse(value!.ToString() ?? throw new Exception("Index is not a number"))];
+            }
+            else
+            {
+                throw new Exception($"Variable {varWithoutIndex} not found");
+            }
+        }
 
         if (!Variables.ContainsKey(varName))
-        {
             throw new Exception($"Variable '{varName}' is not defined");
-        }
+        
 
         return Variables[varName];
 
@@ -159,15 +216,22 @@ public class CritVisitor: CritBaseVisitor<object?>
         if (context.BOOL() is { } b)
             return b.GetText() == "true";
 
+
         if (context.array() is { } a)
         {
             string[] strArr = a.GetText()[1..^1].Split(',');
             object[] anyArr = new object[strArr.Length];
+            //var anyLst = new List<object>
+            //{
+            //    Capacity = strArr.Length
+            //};
             int index = 0;
             foreach (string element in strArr)
             {
                 if (element.StartsWith('"') && element.EndsWith('"'))
                     anyArr[index] = element[1..^1];
+                //anyLst.Add(element[1..^1]);
+
                 //else if (element.StartsWith('[') && element.EndsWith(']'))
                 //    throw new Exception("Array indexing is not implemented");
                 else
