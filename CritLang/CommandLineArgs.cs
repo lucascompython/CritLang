@@ -26,7 +26,8 @@
                     return arg;
                 }
             }
-            throw new Exception("Something went wrong");
+
+            return string.Empty;
         }
     }
 }

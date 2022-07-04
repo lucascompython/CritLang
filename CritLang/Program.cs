@@ -2,7 +2,7 @@
 using CritLang;
 using CritLang.Content;
 
-string VERSION = "v0.1.6-beta";
+string VERSION = "v0.1.7-beta";
 
 string fileName = CommandLineArgs.Parse(args, VERSION);
 
