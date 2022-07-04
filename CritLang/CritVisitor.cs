@@ -14,25 +14,58 @@ public class CritVisitor: CritBaseVisitor<object?>
         //GLOBAL FUNCTIONs / VARIABLES
         Variables["PI"] = Math.PI;
         Variables["Sqrt"] = new Func<object?[], object?>(Sqrt);
+        Variables["Pow"] = new Func<object?[], object?>(Pow);
 
         Variables["Write"] = new Func<object?[], object?>(Write);
         Variables["WriteLine"] = new Func<object?[], object?>(WriteLine);
         Variables["Sum"] = new Func<object?[], object?>(SumArr);
         Variables["Add"] = new Func<object?[], object?>(AddArr);
+        Variables["Remove"] = new Func<object?[], object?>(RemoveArr);
+        Variables["Len"] = new Func<object?[], object?>(LenArr);
     }
 
 
+    private object? RemoveArr(object?[] args)
+    {
+        if (args.Length != 2)
+        {
+            throw new Exception("Remove expects 2 arguments, first one the array and the second ono the index.");
+        }
+        
+        if (args[0] is List<object> objArr)
+        {
+            objArr.RemoveAt((int)args[1]!);
+        }
+
+        return null;
+    }
 
 
+    private static object? Pow(object?[] args) => args.Length is not 2 
+        ? throw new Exception("Pow expects 2 arguments.") 
+        : (float)(Math.Pow(Convert.ToSingle(args[0]!), Convert.ToSingle(args[1]!)));
+    
+    private static object? LenArr(object?[] args)
+    {
+        if (args.Length is not 1)
+            throw new Exception("Len expects 1 argument");
+
+        if (args[0] is List<object> arr)
+            return arr.Count;
+
+        return new Exception("Len expects an array");
+
+    }
+    
 
     private static object? AddArr(object?[] args)
     {
         if (args.Length is not 2)
-            throw new Exception("Add expects 2 argument");
+            throw new Exception("Add expects 2 argument, the first one being the array and the second one being the index.");
 
-        if (args[0] is object[] objArr)
+        if (args[0] is List<object> objArr)
         {
-            Console.WriteLine(objArr);
+            objArr.Add(args[1]!);
         }
 
         return null;
@@ -44,7 +77,7 @@ public class CritVisitor: CritBaseVisitor<object?>
         if (args.Length is not 1)
             throw new Exception("Sum expects 1 argument");
 
-        if (args[0] is object[] objArr)
+        if (args[0] is List<object> objArr)
             return (float)objArr.Sum(Convert.ToDouble);
         
         throw new Exception("Sum: Argument is not a valid array.");
@@ -60,8 +93,8 @@ public class CritVisitor: CritBaseVisitor<object?>
 
         return arg[0] switch
         {
-            int d => Math.Sqrt(Convert.ToDouble(d)),
-            float f => Math.Sqrt(f),
+            int d => Convert.ToInt32(Math.Sqrt(Convert.ToDouble(d))),
+            float f => Convert.ToSingle(Math.Sqrt(f)),
             _ => throw new Exception("Sqrt takes one integer ot float argument")
         };
     }
@@ -72,7 +105,7 @@ public class CritVisitor: CritBaseVisitor<object?>
     {
         foreach (var arg in args)
         {
-            if (arg is object[] objArr)
+            if (arg is List<object> objArr)
             {
                 foreach (var obj in objArr)
                     Console.Write(obj);
@@ -87,7 +120,7 @@ public class CritVisitor: CritBaseVisitor<object?>
     {
         foreach (var arg in args)
         {
-            if (arg is object[] objArr)
+            if (arg is List<object> objArr)
             {
                 foreach (var obj in objArr)
                     Console.WriteLine(obj);
@@ -141,17 +174,34 @@ public class CritVisitor: CritBaseVisitor<object?>
 
         if (varName.Contains('[') && varName.Contains(']'))
         {
-            string varWithoutIndex = varName.Replace("[", string.Empty).Replace("]", string.Empty);
-            char index = varWithoutIndex[^1];
+            string[] variableHelper = varName.Replace("]", string.Empty).Split('[');
+            string varWithoutIndex = variableHelper[0];
+            string index = variableHelper[1];
             //Variables[varWithoutIndex[..^1]]?[int.Parse(index.ToString())] = value;
             //Console.WriteLine(Variables[varWithoutIndex[..^1]]?[int.Parse(index.ToString())]);
-            var variable = Variables[varWithoutIndex[..^1]];
-            if (variable is not object[] vO) return null;
-            foreach (var ola in vO)
+            var variable = Variables[varWithoutIndex];
+            if (variable is not List<object> vO) return null;
+            //foreach (var ola in vO)
+            //{
+            //    Console.WriteLine(ola);
+            //}
+            try
             {
-                Console.WriteLine(ola);
+                if (int.TryParse(index, out int intIndex))
+                {
+                    vO[intIndex] = value!;
+                }
+                else if (Variables.ContainsKey(varWithoutIndex))
+                {
+                    var varValue = Variables[index];
+                    return varValue is not null ? vO[(int)Math.Round(Convert.ToSingle(varValue), 0)] = varValue : throw new Exception("Index not valid.");
+                }
             }
-            vO[int.Parse(index.ToString())] = value!;
+            catch (ArgumentOutOfRangeException)
+            {
+                vO.Add(value!);
+            }
+            
         }
         else
         {
@@ -178,13 +228,13 @@ public class CritVisitor: CritBaseVisitor<object?>
             var variable = Variables[varWithoutIndex];
             if (int.TryParse(index, out _))
             {
-                if (variable is object[] vO)
+                if (variable is List<object> vO)
                     return vO[int.Parse(index)];
             }
             else if (Variables.ContainsKey(varWithoutIndex))
             {
                 var value = Variables[index];
-                if (variable is object[] vO)
+                if (variable is List<object> vO)
                     return vO[int.Parse(value!.ToString() ?? throw new Exception("Index is not a number"))];
             }
             else
@@ -204,6 +254,7 @@ public class CritVisitor: CritBaseVisitor<object?>
 
     public override object? VisitConstant(CritParser.ConstantContext context)
     {
+        
         if (context.INTEGER() is { } i)
             return int.Parse((i.GetText()));
 
@@ -220,25 +271,22 @@ public class CritVisitor: CritBaseVisitor<object?>
         if (context.array() is { } a)
         {
             string[] strArr = a.GetText()[1..^1].Split(',');
-            object[] anyArr = new object[strArr.Length];
-            //var anyLst = new List<object>
-            //{
-            //    Capacity = strArr.Length
-            //};
-            int index = 0;
+            var anyLst = new List<object>();
+            if (strArr.Length <= 1)
+                return anyLst;
+        
+            
+
+
             foreach (string element in strArr)
             {
                 if (element.StartsWith('"') && element.EndsWith('"'))
-                    anyArr[index] = element[1..^1];
-                //anyLst.Add(element[1..^1]);
+                    anyLst.Add(element[1..^1]);
 
-                //else if (element.StartsWith('[') && element.EndsWith(']'))
-                //    throw new Exception("Array indexing is not implemented");
                 else
-                    anyArr[index] = int.TryParse(element, out int outi) ? outi : float.Parse(element, CultureInfo.InvariantCulture);
-                index++;
+                    anyLst.Add(int.TryParse(element, out int outi) ? outi : float.Parse(element, CultureInfo.InvariantCulture));
             }
-            return anyArr;
+            return anyLst;
         }
 
         if (context.NULL() is { })

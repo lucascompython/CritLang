@@ -1,0 +1,44 @@
+total = [];
+
+rounds = 25000;
+
+
+i = 0;
+
+
+while i < rounds {
+    total[i] = true;
+    i = i + 1;
+}
+
+#start of sieve
+
+
+num = 2;
+
+
+while num < Sqrt(rounds) {
+    
+    if total[num] == true {
+        j = Pow(num, 2);
+
+        while j < rounds {
+            total[j] = false;
+            j = j + num;
+        } 
+    }
+    num = num + 1;
+}
+
+
+primes = 0;
+k = 2;
+while k < rounds {
+    if total[k] == true {
+        primes = primes + 1;
+    }
+    k = k + 1;
+}
+composites = rounds - primes;
+WriteLine("Found " + primes + " and " + composites + " composites in " + rounds + " numbers!");
+

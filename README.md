@@ -18,7 +18,7 @@ else {
     WriteLine(num + " is smaller than 2.");
 }
 
-while num < 10 {
+while num < 10 { 
     WriteLine(num);
     num = num + 1;
 }
@@ -26,7 +26,7 @@ else {
     WriteLine("num was already bigger than 10.");
 }
 ```
-You can look [here](CritLang/primes.crit) for more "real world" example.
+You can look [here](CritLang/sieve.crit) for more an implemantion of the [Sieve of Eratosthenes](https://en.wikipedia.org/wiki/Sieve_of_Eratosthenes) in crit!
 
 ## Tips and Tricks
 You can have a else block after a while loop declaration to avoid a if statement.
@@ -42,8 +42,10 @@ until num > 10 {
 ## TODOs
 
 - [ ] Add arrays, python-like dictionaries and some more basic data structures.
-- [ ] Add a special block of code to query with [Nanql](https://github.com/lucascompython/NANQL).
+- [ ] Add a special block of code to query with [NANQL](https://github.com/lucascompython/NANQL).
 - [ ] Add the hability of making functions.
+- [ ] Documentation.
+- [ ] Add the hability of importing other files.
 - [ ] Make a proper std lib.
 - [ ] Add for loops.
 - [ ] Add local variables.

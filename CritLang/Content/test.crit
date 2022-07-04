@@ -1,9 +1,15 @@
-﻿ola = [1, "dois", 3.0];
-
-num = 0;
-while num < 2 {
-	WriteLine(ola[num]);
-	num = num + 1;
-}
+﻿ola = [1, "dois", 3, "quatro"];
 
 
+WriteLine(ola);
+
+Remove(ola, 1);
+
+WriteLine("----------------");
+WriteLine(ola);
+
+
+Add(ola, 69.420);
+
+WriteLine("----------------");
+WriteLine(ola);
