@@ -1,15 +1,25 @@
-﻿ola = [1, "dois", 3, "quatro"];
+﻿ola = 5;
 
+
+
+ola *= 2;
+
+ola /= 3;
+
+ola -= 1.3333;
+
+ola += 3;
+
+ola %= 2
 
 WriteLine(ola);
 
-Remove(ola, 1);
-
-WriteLine("----------------");
-WriteLine(ola);
 
 
-Add(ola, 69.420);
 
-WriteLine("----------------");
-WriteLine(ola);
+
+
+
+
+
+

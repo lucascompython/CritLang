@@ -25,7 +25,7 @@ public class CritVisitor: CritBaseVisitor<object?>
     }
 
 
-    private object? RemoveArr(object?[] args)
+    private static object? RemoveArr(object?[] args)
     {
         if (args.Length != 2)
         {
@@ -172,6 +172,8 @@ public class CritVisitor: CritBaseVisitor<object?>
 
         var value = Visit(context.expression());
 
+        var op = context.assignmentOp().GetText();
+        
         if (varName.Contains('[') && varName.Contains(']'))
         {
             string[] variableHelper = varName.Replace("]", string.Empty).Split('[');
@@ -203,9 +205,42 @@ public class CritVisitor: CritBaseVisitor<object?>
             }
             
         }
-        else
+        
+        else switch (op)
         {
-            Variables[varName] = value;
+            case "*=":
+            {
+                var varValue = Convert.ToSingle(Variables[varName]!);
+                Variables[varName] = varValue * Convert.ToSingle(value!);
+                break;
+            }
+            case "/=":
+            {
+                var varValue = Convert.ToSingle(Variables[varName]!);
+                Variables[varName] = varValue / Convert.ToSingle(value!);
+                break;
+            }
+            case "%=":
+            {
+                var varValue = Convert.ToSingle(Variables[varName]!);
+                Variables[varName] = varValue % Convert.ToSingle(value!);
+                break;
+            }
+            case "+=":
+            {
+                var varValue = Convert.ToSingle(Variables[varName]!);
+                Variables[varName] = varValue + Convert.ToSingle(value!);
+                break;
+            }
+            case "-=":
+            {
+                var varValue = Convert.ToSingle(Variables[varName]!);
+                Variables[varName] = varValue - Convert.ToSingle(value!);
+                break;
+            }
+            default:
+                Variables[varName] = value;
+                break;
         }
         
         
@@ -330,7 +365,6 @@ public class CritVisitor: CritBaseVisitor<object?>
             _ => throw new NotImplementedException()
         };
     }
-
 
     private static object? Add(object? left, object? right) => (left, right) switch
     {

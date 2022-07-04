@@ -15,7 +15,9 @@ whileBlock: WHILE expression block ('else' elseIfBlock);
 
 WHILE: 'while' | 'until';
 
-assignment: IDENTIFIER '=' expression;
+assignment: IDENTIFIER assignmentOp expression;
+
+assignmentOp: '=' | '*=' | '/=' | '%=' | '+=' | '-=';
 
 functionCall: IDENTIFIER '(' (expression (',' expression)*)? ')';
 
