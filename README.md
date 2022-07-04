@@ -46,6 +46,7 @@ until num > 10 {
 - [ ] Add the hability of making functions.
 - [ ] Documentation.
 - [ ] Add the hability of importing other files.
+- [ ] Add interactive mode (with a REPL).
 - [ ] Make a proper std lib.
 - [ ] Add for loops.
 - [ ] Add local variables.

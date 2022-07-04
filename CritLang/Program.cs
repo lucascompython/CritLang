@@ -2,29 +2,12 @@
 using CritLang;
 using CritLang.Content;
 
-var fileName = "";
-foreach (var arg in args)
-{
-    if (new[] { "-h", "--help" }.Contains(arg))
-    {
-        Console.WriteLine("Usage: critlang [file]");
-        Environment.Exit(0);
-    }
-    else if (new[] { "-v", "--version" }.Contains(arg))
-    {
-        Console.WriteLine("CritLang v0.1.2-beta");
-        Environment.Exit(0);
-    }
-    else if (arg.StartsWith("-"))
-    {
-        Console.WriteLine("Unknown option: " + arg);
-        Environment.Exit(1);
-    }
-    else
-    {
-        fileName = arg;
-    }
-}
+string VERSION = "v0.1.5-beta";
+
+string fileName = CommandLineArgs.Parse(args, VERSION);
+
+
+
 if (fileName.Length == 0)
 {
     Console.WriteLine("No file specified");
