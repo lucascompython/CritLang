@@ -6,7 +6,7 @@ rounds = 25000;
 i = 0;
 
 
-while i < rounds {
+until i > rounds {
     total[i] = true;
     i += 1;
 }
