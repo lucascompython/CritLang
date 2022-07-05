@@ -5,6 +5,7 @@ program: line* EOF;
 
 line: statement | ifBlock | whileBlock;
 
+
 statement: (assignment|functionCall) ';';
 
 ifBlock: 'if' expression block ('else' elseIfBlock);
@@ -31,6 +32,7 @@ expression
 	| expression addOp expression		#additiveExpression
 	| expression compareOp expression	#comparisonExpression
 	| expression boolOp expression	    #booleanExpression
+	// | expression INCREMENTOP			#incrementExpression TODO add incrementOP
 	;
 
 
@@ -52,11 +54,13 @@ array: '[' (constant (',' constant)*)? ']';
 //index: '[' INTEGER ']';
 NULL: 'null';
 
+INDEX: '[' IDENTIFIER ']' | '[' INTEGER ']';
+INCREMENTOP: '++' | '--';
 
 block: '{' line* '}';
 
 WS:  [ \t\r\n]+ -> skip;
-IDENTIFIER: [a-zA-Z_][a-zA-Z0-9_]* ('[' IDENTIFIER ']' | '[' INTEGER ']')* ;
+IDENTIFIER: [a-zA-Z_][a-zA-Z0-9_]* (INDEX)* ;
 
 Comment
   :  '#' ~( '\r' | '\n' )*

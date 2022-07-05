@@ -2,7 +2,7 @@
 using CritLang;
 using CritLang.Content;
 
-string VERSION = "v0.1.7-beta";
+string VERSION = "v0.1.8-beta";
 
 string fileName = CommandLineArgs.Parse(args, VERSION);
 
@@ -30,7 +30,7 @@ var inputStream = new AntlrInputStream(fileContents);
 var critLexer = new CritLexer(inputStream);
 var commonTokenStream = new CommonTokenStream(critLexer);
 var critParser = new CritParser(commonTokenStream);
-var chatContext = critParser.program();
+var critContext = critParser.program();
 var visitor = new CritVisitor();
 
-visitor.Visit(chatContext);
+visitor.Visit(critContext);

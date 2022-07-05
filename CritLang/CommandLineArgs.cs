@@ -2,6 +2,12 @@
 {
     internal class CommandLineArgs
     {
+        /// <summary>
+        /// Parse the arguments passed to the program.
+        /// </summary>
+        /// <param name="args"></param>
+        /// <param name="version"></param>
+        /// <returns></returns>
         public static string Parse(string[] args, string version)
         {
             foreach (var arg in args)

@@ -1,25 +1,22 @@
-﻿ola = 5;
+﻿
+str_num1 = ReadLine("Digite um numero: ");
+str_num2 = ReadLine("Digite outro numero: ");
+
+int_num1 = Convert(str_num1, "int");
+int_num2 = Convert(str_num2, "int");
+
+WriteLine(int_num1 + int_num2);
 
 
+lista = [1, 2, "tres", 69];
 
-ola *= 2;
+num = 0;
 
-ola /= 3;
-
-ola -= 1.3333;
-
-ola += 3;
-
-ola %= 2
-
-WriteLine(ola);
+while num < Len(lista) {
+	WriteLine(lista[num]);
+	num += 1;
+}
 
 
-
-
-
-
-
-
-
+WriteLine("FINAL");
 

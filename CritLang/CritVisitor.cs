@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using System.Reflection.Metadata;
 using CritLang.Content;
 
 namespace CritLang;
@@ -11,19 +12,64 @@ public class CritVisitor: CritBaseVisitor<object?>
 
     public CritVisitor()
     {
-        //GLOBAL FUNCTIONs / VARIABLES
+        //Math Functions
         Variables["PI"] = Math.PI;
         Variables["Sqrt"] = new Func<object?[], object?>(Sqrt);
         Variables["Pow"] = new Func<object?[], object?>(Pow);
 
+        //Console Functions
         Variables["Write"] = new Func<object?[], object?>(Write);
         Variables["WriteLine"] = new Func<object?[], object?>(WriteLine);
+        Variables["ReadLine"] = new Func<object?[], object?>(ReadLine);
+
+        //Array Functions
         Variables["Sum"] = new Func<object?[], object?>(SumArr);
         Variables["Add"] = new Func<object?[], object?>(AddArr);
         Variables["Remove"] = new Func<object?[], object?>(RemoveArr);
         Variables["Len"] = new Func<object?[], object?>(LenArr);
+
+
+        //Gerenal Functions
+        Variables["Convert"] = new Func<object?[], object?>(ConvertTo);
+
     }
 
+
+    public static object? ConvertTo(object?[] args)
+    {
+        if (args.Length != 2)
+        {
+            throw new Exception("ConvertTo expects 2 arguments, first one the variable to convert to and the second one being the type.");
+        }
+
+        string[] typeOptions = new[] { "int", "float", "string", "bool" };
+        if (!typeOptions.Contains(args[1]!.ToString()!))
+            throw new Exception($"Invalid type...\nMust be one of the following types: {string.Join(", ", typeOptions)}");
+
+        return args[1]!.ToString() switch
+        {
+            "int" => Convert.ToInt32(args[0]),
+            "float" => Convert.ToSingle(args[0]),
+            "string" => Convert.ToString(args[0]),
+            "bool" => Convert.ToBoolean(args[0]),
+            _ => throw new Exception("Invalid type...")
+        };
+    }
+
+    
+    private static object? ReadLine(object?[] args)
+    {
+        if (args.Length != 1)
+        {
+            throw new Exception("ReadLine expects 1 arguments, being the text to prompt to the use.");
+        }
+
+        string text = args[0]!.ToString()!;
+        Console.Write(text);
+        return Console.ReadLine();
+
+    }
+    
 
     private static object? RemoveArr(object?[] args)
     {
@@ -251,10 +297,8 @@ public class CritVisitor: CritBaseVisitor<object?>
     public override object? VisitIdentifierExpression(CritParser.IdentifierExpressionContext context)
     {
         var varName = context.IDENTIFIER().GetText();
-        
         if (varName.Contains('[') && varName.Contains(']'))
         {
-
             string[] variableHelper = varName.Replace("]", string.Empty).Split('[');
             string varWithoutIndex = variableHelper[0];
             string index = variableHelper[1];
@@ -277,6 +321,25 @@ public class CritVisitor: CritBaseVisitor<object?>
                 throw new Exception($"Variable {varWithoutIndex} not found");
             }
         }
+        
+
+        //TODO ADD SOMETHING LIKE THIS
+        //if (varName.Contains('.'))
+        //{az
+        //    string[] variableHelper = varName.Split('.');
+        //    string varWithoutIndex = variableHelper[0];
+        //    string index = variableHelper[1];
+        //    var variable = Variables[varWithoutIndex];
+        //    if (variable is not null)
+        //    {
+        //        var value = variable.GetType().GetProperty(index).GetValue(variable);
+        //        return value;
+        //    }
+        //    else
+        //    {
+        //        throw new Exception($"Variable {varWithoutIndex} not found");
+        //    }
+        //}
 
         if (!Variables.ContainsKey(varName))
             throw new Exception($"Variable '{varName}' is not defined");
