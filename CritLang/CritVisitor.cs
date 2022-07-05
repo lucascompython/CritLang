@@ -10,8 +10,9 @@ public class CritVisitor: CritBaseVisitor<object?>
 
 
 
-    public CritVisitor()
+    public CritVisitor(string version)
     {
+        string _version = version;
         //Math Functions
         Variables["PI"] = Math.PI;
         Variables["Sqrt"] = new Func<object?[], object?>(Sqrt);
@@ -28,9 +29,29 @@ public class CritVisitor: CritBaseVisitor<object?>
         Variables["Remove"] = new Func<object?[], object?>(RemoveArr);
         Variables["Len"] = new Func<object?[], object?>(LenArr);
 
+        //OS Functions
+        Variables["ReadText"] = new Func<object?[], object?>(ReadText);
 
         //Gerenal Functions
         Variables["Convert"] = new Func<object?[], object?>(ConvertTo);
+        Variables["CritVersion"] = _version;
+
+    }
+
+
+    public static object? ReadText(object?[] args)
+    {
+        if (args.Length != 1) throw new Exception("ReadText expects 1 argument");
+
+        try
+        { 
+            return File.ReadAllText(args[0]!.ToString()!);
+        }
+        catch (Exception e)
+        {
+            throw new Exception("ReadText failed: " + e.Message);
+        }
+
 
     }
 

@@ -31,6 +31,6 @@ var critLexer = new CritLexer(inputStream);
 var commonTokenStream = new CommonTokenStream(critLexer);
 var critParser = new CritParser(commonTokenStream);
 var critContext = critParser.program();
-var visitor = new CritVisitor();
+var visitor = new CritVisitor(VERSION);
 
 visitor.Visit(critContext);

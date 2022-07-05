@@ -1,22 +1,11 @@
 ﻿
-str_num1 = ReadLine("Digite um numero: ");
-str_num2 = ReadLine("Digite outro numero: ");
 
-int_num1 = Convert(str_num1, "int");
-int_num2 = Convert(str_num2, "int");
-
-WriteLine(int_num1 + int_num2);
+path = "./Content/ola.txt";
 
 
-lista = [1, 2, "tres", 69];
-
-num = 0;
-
-while num < Len(lista) {
-	WriteLine(lista[num]);
-	num += 1;
-}
+text = ReadText(path);
 
 
-WriteLine("FINAL");
+WriteLine(text + CritVersion);
+
 
