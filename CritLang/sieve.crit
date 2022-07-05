@@ -41,4 +41,3 @@ while k < rounds {
 }
 composites = rounds - primes;
 WriteLine("Found " + primes + " and " + composites + " composites in " + rounds + " numbers!");
-

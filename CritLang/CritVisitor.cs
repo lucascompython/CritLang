@@ -27,18 +27,49 @@ public class CritVisitor: CritBaseVisitor<object?>
         Variables["Sum"] = new Func<object?[], object?>(SumArr);
         Variables["Add"] = new Func<object?[], object?>(AddArr);
         Variables["Remove"] = new Func<object?[], object?>(RemoveArr);
-        Variables["Len"] = new Func<object?[], object?>(LenArr);
 
         //OS Functions
         Variables["ReadText"] = new Func<object?[], object?>(ReadText);
+        //Variables["Time"] = new Func<object?[], object?>(Time);
 
         //Gerenal Functions
         Variables["Convert"] = new Func<object?[], object?>(ConvertTo);
+        Variables["Delay"] = new Func<object?[], object?>(Delay);
         Variables["CritVersion"] = _version;
+        Variables["Split"] = new Func<object?[], object?>(Split);
+        Variables["Len"] = new Func<object?[], object?>(Len);
 
     }
 
 
+
+    public static object? Split(object?[] args)
+    {
+        if (args.Length != 2) throw new Exception("Delay takes 2 arguments.");
+        object[]? ol = args[0]?.ToString()?.Split(args[1]!.ToString()!.ToCharArray());
+        return ol?.ToList();
+    }
+
+    public static object? Delay(object?[] args)
+    {
+        if (args.Length != 1) throw new Exception("Delay takes 1 argument");
+        Task.Delay((int)args[0]!).Wait();
+        return null;
+        
+    }
+
+    //TODO FIX THIS 
+    //public static object? Time(object?[] args)
+    //{
+    //    if (args.Length != 0) throw new Exception("Time takes no arguments");
+
+    //    //TimeSpan t = (DateTime.UtcNow - new DateTime(1970, 1, 1));
+    //    //double timestamp = t.TotalMilliseconds;
+    //    //return Math.Round(timestamp / 1000, 2);
+    //    //int m = DateTime.Now.Millisecond;
+    //    return DateTime.Now;
+    //}
+    
     public static object? ReadText(object?[] args)
     {
         if (args.Length != 1) throw new Exception("ReadText expects 1 argument");
@@ -51,8 +82,6 @@ public class CritVisitor: CritBaseVisitor<object?>
         {
             throw new Exception("ReadText failed: " + e.Message);
         }
-
-
     }
 
 
@@ -112,16 +141,17 @@ public class CritVisitor: CritBaseVisitor<object?>
         ? throw new Exception("Pow expects 2 arguments.") 
         : (float)(Math.Pow(Convert.ToSingle(args[0]!), Convert.ToSingle(args[1]!)));
     
-    private static object? LenArr(object?[] args)
+    private static object? Len(object?[] args)
     {
         if (args.Length is not 1)
             throw new Exception("Len expects 1 argument");
 
-        if (args[0] is List<object> arr)
-            return arr.Count;
-
-        return new Exception("Len expects an array");
-
+        return args[0] switch
+        {
+            List<object> arr => arr.Count,
+            string str => str.Length,
+            _ => new Exception("Len expects an array or string")
+        };
     }
     
 

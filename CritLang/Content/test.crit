@@ -1,11 +1,15 @@
-﻿
+﻿texto = ReadText("./Content/ola.txt");
 
-path = "./Content/ola.txt";
+textoArr = Split(texto, " ");
 
+num = 0;
 
-text = ReadText(path);
+while num < Len(textoArr) {
+	
+	WriteLine(textoArr[num]);
+	if textoArr[num] == "version:" {
+		Write(CritVersion);
+	}
 
-
-WriteLine(text + CritVersion);
-
-
+	num += 1;
+}
