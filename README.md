@@ -71,7 +71,7 @@ Please feel free to help because I don't really know what im doing!
 
 ## Known Bugs
 Sometimes for some reason semicolon are not needed.
-
+Big numbers might get truncated / broken.
 
 ## License
 This project is licensed under the GPL3 license.
