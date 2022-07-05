@@ -28,6 +28,8 @@ else {
 ```
 You can look [here](CritLang/sieve.crit) for more an implemantion of the [Sieve of Eratosthenes](https://en.wikipedia.org/wiki/Sieve_of_Eratosthenes) in crit!
 
+## Documentation
+Check [here](https://github.com/lucascompython/CritLang/wiki/Language-Defenition) for the language definition.
 ## Tips and Tricks
 You can have a else block after a while loop declaration to avoid a if statement.
 To have syntax highligting you can set the language to Golang or Rust, I've tested both and they look fine to me.
@@ -41,10 +43,10 @@ until num > 10 {
 
 ## TODOs
 
+- [X] Documentation.
 - [ ] Add arrays, python-like dictionaries and some more basic data structures.
 - [ ] Add a special block of code to query with [NANQL](https://github.com/lucascompython/NANQL).
 - [ ] Add the hability of making functions.
-- [ ] Documentation.
 - [ ] Add the hability of importing other files.
 - [ ] Add interactive mode (with a REPL).
 - [ ] Make a proper std lib.
