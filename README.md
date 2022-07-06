@@ -34,7 +34,7 @@ You can look [here](CritLang/sieve.crit) for more an implemantion of the [Sieve 
 ## Documentation
 Check [here](https://github.com/lucascompython/CritLang/wiki/Language-Defenition) for the language definition.
 ## Tips and Tricks
-You can have a else block after a while loop declaration to avoid a if statement.
+You can have a else block after a while loop declaration to avoid a if statement.<br>
 To have syntax highligting you can set the language to Golang or Rust, I've tested both and they look fine to me.<br>
 This language also has a `until` keyword, which is just like the `while` keyword but with the opposite condition.
 ```rust
