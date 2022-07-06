@@ -71,7 +71,8 @@ Or download the executable [here](https://github.com/lucascompython/CritLang/rel
 
 
 ## Contributions 
-Please feel free to help. All help is appreciated!
+Please feel free to help.<br>
+All help is appreciated!
 
 
 ## Known Bugs
