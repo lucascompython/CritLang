@@ -64,7 +64,7 @@ until num > 10 {
 ## How to get it
 
 You can get it from just cloning this repository and then running it (`dotnet run`).<br />
-Or you can clone this repository and then install it globally as a dotnet package (`./install_globally.ps1`) and then just use `crit`<br />
+Or you can clone this repository and then install it globally as a dotnet package (`./install_globally.ps1`) and then just use `crit`.<br />
 Or download the executable [here](https://github.com/lucascompython/CritLang/releases) and then you can just use that file.
 
 
