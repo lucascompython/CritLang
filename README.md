@@ -1,8 +1,8 @@
 # Crit (the programming language)
 
 ## What is Crit?
-Crit is a interpreted dynamic programming language made with C# and [ANTLR4](https://www.antlr.org/) made just because I can.
-This language is still very experimental and is no were to be used for production.
+Crit is a interpreted dynamic programming language made with C# and [ANTLR4](https://www.antlr.org/).<br>
+This language is still very experimental and is no were to be used for production.<br>
 Why the name? Because in League of Legends, **no crit = no bitches**.<br>
 
 The language is [turing complete](https://en.wikipedia.org/wiki/Turing_completeness) (I think) so theoretically you can solve any computational problem with Crit!<br>
