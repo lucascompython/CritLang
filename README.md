@@ -47,7 +47,7 @@ until num > 10 {
 ## TODOs
 
 - [X] Documentation.
-- [ ] Automatically detect the length of a number and assign to it the corret type (int, long, float and double)
+- [X] Automatically detect the length of a number and assign to it the corret type (int, long, float and double)
 - [ ] Add arrays, python-like dictionaries and some more basic data structures.
 - [ ] Add a special block of code to query with [NANQL](https://github.com/lucascompython/NANQL).
 - [ ] Add the hability of making functions.
