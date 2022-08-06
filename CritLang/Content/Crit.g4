@@ -47,6 +47,7 @@ BOOL_OPERATOR: 'and' | 'or' | 'xor';
 constant: INTEGER | FLOAT | STRING | BOOL | array | NULL;
 //arrayIndex: constant '[' INTEGER ']';
 INTEGER: [0-9]+;
+//SEPERATOR: '.' | ',';
 FLOAT: [0-9]+ '.' [0-9]+;
 STRING: ('"' ~'"'* '"') | ('\'' ~'\''* '\'');
 BOOL: 'true' | 'false';

@@ -14,7 +14,9 @@
             {
                 if (new[] { "-h", "--help" }.Contains(arg))
                 {
-                    Console.WriteLine("Usage: crit [file]");
+                    Console.WriteLine("Usage: crit [file]\n" +
+                                      "  -h, --help      Show this help message\n" +
+                                      "  -v, --version   Show version information");
                     Environment.Exit(0);
                 }
                 else if (new[] { "-v", "--version" }.Contains(arg))

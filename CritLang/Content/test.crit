@@ -1,15 +1,13 @@
-﻿texto = ReadText("./Content/ola.txt");
+﻿
 
-textoArr = Split(texto, " ");
 
-num = 0;
 
-while num < Len(textoArr) {
-	
-	WriteLine(textoArr[num]);
-	if textoArr[num] == "version:" {
-		Write(CritVersion);
-	}
 
-	num += 1;
-}
+
+ola = 34076580437543805743058347540383407658043754380574305834754038340765804375438057430583475403834076580437543805743058347540383407658043754380574305834754038 #BigInteger
+
+num1 = ola + 69
+WriteLine(num1);
+
+
+

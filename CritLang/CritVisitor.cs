@@ -1,5 +1,5 @@
 ﻿using System.Globalization;
-using System.Reflection.Metadata;
+using System.Numerics;
 using CritLang.Content;
 
 namespace CritLang;
@@ -38,10 +38,17 @@ public class CritVisitor: CritBaseVisitor<object?>
         Variables["CritVersion"] = _version;
         Variables["Split"] = new Func<object?[], object?>(Split);
         Variables["Len"] = new Func<object?[], object?>(Len);
+        Variables["Type"] = new Func<object?[], object?>(GetTypeOf);
 
     }
 
-
+    public static object? GetTypeOf(object?[] args)
+    {
+        if (args.Length == 0 || args.Length > 1)
+            throw new Exception("Type only takes 1 argument.");
+        
+        return args[0]!.GetType();
+    }
 
     public static object? Split(object?[] args)
     {
@@ -52,13 +59,13 @@ public class CritVisitor: CritBaseVisitor<object?>
 
     public static object? Delay(object?[] args)
     {
-        if (args.Length != 1) throw new Exception("Delay takes 1 argument");
+        if (args.Length != 1) throw new Exception("Delay takes 1 argument that is the number of milliseconds to delay.");
         Task.Delay((int)args[0]!).Wait();
         return null;
         
     }
 
-    //TODO FIX THIS 
+    //TODO FIX THIS; UPDATE SHOULD NOW BE POSSIBLE WITH THE NEW BIG NUMBERS
     //public static object? Time(object?[] args)
     //{
     //    if (args.Length != 0) throw new Exception("Time takes no arguments");
@@ -95,7 +102,7 @@ public class CritVisitor: CritBaseVisitor<object?>
         string[] typeOptions = new[] { "int", "float", "string", "bool" };
         if (!typeOptions.Contains(args[1]!.ToString()!))
             throw new Exception($"Invalid type...\nMust be one of the following types: {string.Join(", ", typeOptions)}");
-
+        //TODO ADD THE REST OF THE TYPES AUTOMATICALLY
         return args[1]!.ToString() switch
         {
             "int" => Convert.ToInt32(args[0]),
@@ -405,10 +412,25 @@ public class CritVisitor: CritBaseVisitor<object?>
     {
         
         if (context.INTEGER() is { } i)
-            return int.Parse((i.GetText()));
+        {
+            string text = i.GetText();
+
+            if (int.TryParse(text, out int inT))
+                return inT;
+
+            if (long.TryParse(text, out long lo))
+                return lo;
+
+            if (BigInteger.TryParse(text, out var biggie))
+                return biggie;
+        }
 
         if (context.FLOAT() is { } f)
-            return float.Parse(f.GetText(), CultureInfo.InvariantCulture);
+        {
+            string text = f.GetText();
+            
+            return text.Split('.')[0].Length >= 40 ? double.Parse(text, CultureInfo.InvariantCulture) : float.Parse(text, CultureInfo.InvariantCulture);
+        }
         
         if (context.STRING() is { } s)
             return s.GetText()[1..^1];
@@ -448,8 +470,8 @@ public class CritVisitor: CritBaseVisitor<object?>
 
     public override object? VisitAdditiveExpression(CritParser.AdditiveExpressionContext context)
     {
-        var left = Visit(context.expression(0));
-        var right = Visit(context.expression(1));
+        var left = Visit(context.expression(0))!;
+        var right = Visit(context.expression(1))!;
 
 
         var op = context.addOp().GetText();
@@ -469,6 +491,10 @@ public class CritVisitor: CritBaseVisitor<object?>
         var right = Visit(context.expression(1));
 
 
+        left = TypeDispatcher(left!);
+        right = TypeDispatcher(right!);
+        
+
         var op = context.multOp().GetText();
 
         return op switch
@@ -480,54 +506,15 @@ public class CritVisitor: CritBaseVisitor<object?>
         };
     }
 
-    private static object? Add(object? left, object? right) => (left, right) switch
-    {
-        (int l, int r) => l + r,
-        (float lf, float rf) => lf + rf,
-        (int lInt, float rf) => lInt + rf,
-        (float lf, int rInt) => lf + rInt,
-        (string, _) => $"{left}{right}",
-        (_, string) => $"{left}{right}",
-        (_, _) => throw new Exception($"Cannot add values of type {left?.GetType()} and {right?.GetType()}.")
-    };
+    private static object? Add(dynamic left, dynamic right) => left + right;
+
+    private static object? Subtract(dynamic left, dynamic right) => left - right;
     
+    private static object? Multiply(dynamic left, dynamic right) => left * right;
 
-    private static object? Subtract(object? left, object? right) => (left, right) switch
-    {
-        (int l, int r) => l - r,
-        (float lf, float rf) => lf - rf,
-        (int lInt, float rf) => lInt - rf,
-        (float lf, int rInt) => lf - rInt,
-        (_, _) => throw new Exception($"Cannot subtract values of type {left?.GetType()} and {right?.GetType()}.")
-    };
+    private static object? Divide(dynamic left, dynamic right) => left / right;
 
-
-    private static object? Multiply(object? left, object? right) => (left, right) switch
-    {
-        (int l, int r) => l * r,
-        (float lf, float rf) => lf * rf,
-        (int lInt, float rf) => lInt * rf,
-        (float lf, int rInt) => lf * rInt,
-        (_, _) => throw new Exception($"Cannot multiply values of type {left?.GetType()} and {right?.GetType()}.")
-    };
-
-    private static object? Divide(object? left, object? right) => (left, right) switch
-    {
-        (int l, int r) => l / r,
-        (float lf, float rf) => lf / rf,
-        (int lInt, float rf) => lInt / rf,
-        (float lf, int rInt) => lf / rInt,
-        (_, _) => throw new Exception($"Cannot divide values of type {left?.GetType()} and {right?.GetType()}.")
-    };
-
-    private static object? Modulus(object? left, object? right) => (left, right) switch
-    {
-        (int l, int r) => l % r,
-        (float lf, float rf) => lf % rf,
-        (int lInt, float rf) => lInt % rf,
-        (float lf, int rInt) => lf % rInt,
-        (_, _) => throw new Exception($"Cannot modulus values of type {left?.GetType()} and {right?.GetType()}.")
-    };
+    private static object? Modulus(dynamic left, dynamic right) => left % right;
 
 
 
@@ -601,12 +588,61 @@ public class CritVisitor: CritBaseVisitor<object?>
 
     }
 
+    //TODO OPTIMIZE THIS SHIT
+    private static dynamic TypeDispatcher(dynamic variable)
+    {
+        if (variable == null) throw new ArgumentNullException(nameof(variable));
+
+        string variableText = variable.ToString()!;
+
+        if (variableText.Contains('.') || variableText.Contains(','))
+        {
+            return variableText.Split('.')[0].Length >= 40
+                ? double.Parse(variableText, CultureInfo.InvariantCulture)
+                : float.Parse(variableText, CultureInfo.InvariantCulture);
+        }
+        
+    
+        if (int.TryParse(variableText, out int variableTextInt))
+            return variableTextInt;
+
+        if (long.TryParse(variableText, out long variableTextLong))
+            return variableTextLong;
+
+        return BigInteger.TryParse(variableText, out var variableTextBiggie) ? variableTextBiggie : variable;
+        
+        //TODO MAKE A ERROR MESSAGE HERE OF THE TYPE OF VARIABLE
+        //throw new Exception($"Something when wrong when trying to figure out the type of {variableText}.");
+    }
+
 
     public override object? VisitComparisonExpression(CritParser.ComparisonExpressionContext context)
     {
         var left = Visit(context.expression(0));
         var right = Visit(context.expression(1));
 
+        if (left is null || right is null) return null;
+        
+        string leftText = left!.ToString()!;
+        string rightText = right!.ToString()!;
+
+        left = TypeDispatcher(left);
+        right = TypeDispatcher(right);
+
+
+        
+
+        if (left is BigInteger && right is float or double)
+        {
+            object obj = left; BigInteger biggie = (BigInteger)obj; left = (double)biggie;
+        }
+        
+        else if (right is BigInteger && left is float or double)
+        {
+            object obj = right; BigInteger biggie = (BigInteger)obj; right = (double)biggie;
+        }
+
+        
         var op = context.compareOp().GetText();
 
         return op switch
@@ -622,97 +658,37 @@ public class CritVisitor: CritBaseVisitor<object?>
         };
     }
 
-
-
-
-    private static bool IsEquals(object? left, object? right)
+    private static bool IsEquals(dynamic left, dynamic right)
     {
-        switch (left, right)
-        {
-            case (int l, int r):
-                return l == r;
-            case (float lf, float rf):
-                return lf == rf;
-            case (int lInt, float rFloat):
-                return lInt == rFloat;
-            case (float lFloat, int rInt):
-                return lFloat == rInt;
-        }
-        if (left is string || right is string)
-            return left?.ToString() == right?.ToString();
+
 
         if (left is bool || right is bool)
             return left?.ToString() == right?.ToString();
 
-        throw new Exception($"Cannot compare values of type {left?.GetType()} and {right?.GetType()}.");
-    }
-
-
-    private static bool NotEquals(object? left, object? right)
-    {
-        switch (left, right)
-        {
-            case (int l, int r):
-                return l != r;
-            case (float lf, float rf):
-                return lf != rf;
-            case (int lInt, float rFloat):
-                return lInt != rFloat;
-            case (float lFloat, int rInt):
-                return lFloat != rInt;
-        }
-        
         if (left is string || right is string)
-            return left?.ToString() != right?.ToString();
+            return left?.ToString() == right?.ToString();
 
-        throw new Exception($"Cannot compare values of type {left?.GetType()} and {right?.GetType()}.");
+        return left == right;
     }
 
-    private static bool GreaterThanOrEqual(object? left, object? right) => (left, right) switch
-    {
-        (int l, int r) => l >= r,
-        (float lf, float rf) => lf >= rf,
-        (int lInt, float rFloat) => lInt >= rFloat,
-        (float lFloat, int rInt) => lFloat >= rInt,
-        _ => throw new Exception($"Cannot compare values of type {left?.GetType()} and {right?.GetType()}."),
-    };
+    private static bool NotEquals(dynamic left, dynamic right) => left != right;
+    
+    private static bool GreaterThanOrEqual(dynamic left, dynamic right) => left >= right;
 
-
-    private static bool LessThanOrEqual(object? left, object? right) => (left, right) switch
-    {
-        (int l, int r) => l <= r,
-        (float lf, float rf) => lf <= rf,
-        (int lInt, float rFloat) => lInt <= rFloat,
-        (float lFloat, int rInt) => lFloat <= rInt,
-        _ => throw new Exception($"Cannot compare values of type {left?.GetType()} and {right?.GetType()}."),
-    };
-
-
-
-    private static bool GreaterThan(object? left, object? right) => (left, right) switch
-    {
-        (int l, int r) => l > r,
-        (float lf, float rf) => lf > rf,
-        (int lInt, float rFloat) => lInt > rFloat,
-        (float lFloat, int rInt) => lFloat > rInt,
-        _ => throw new Exception($"Cannot compare values of type {left?.GetType()} and {right?.GetType()}."),
-    };
-
-
-    private static bool LessThan(object? left, object? right) => (left, right) switch
-    {
-        (int l, int r) => l < r,
-        (float lf, float rf) => lf < rf,
-        (int lInt, float rFloat) => lInt < rFloat,
-        (float lFloat, int rInt) => lFloat < rInt,
-        _ => throw new Exception($"Cannot compare values of type {left?.GetType()} and {right?.GetType()}.")
-    };
+    private static bool LessThanOrEqual(dynamic left, dynamic right) => left <= right;
+    
+    private static bool GreaterThan(dynamic left, dynamic right) => left > right;
+    
+    private static bool LessThan(dynamic left, dynamic right) => left < right;
     
     private static bool IsTrue(object? value) => value switch
     {
         bool b => b,
         int i => i != 0,
         float f => f != 0,
+        long l => l != 0,
+        double d => d != 0,
+        BigInteger bi => bi != 0,
         string s => s.Length != 0,
         _ => throw new Exception($"Value is not boolean.")
     };

@@ -2,7 +2,7 @@
 using CritLang;
 using CritLang.Content;
 
-const string VERSION = "v0.1.9-beta";
+const string VERSION = "v0.1.10-beta";
 
 string fileName = CommandLineArgs.Parse(args, VERSION);
 
@@ -34,3 +34,4 @@ var critContext = critParser.program();
 var visitor = new CritVisitor(VERSION);
 
 visitor.Visit(critContext);
+
