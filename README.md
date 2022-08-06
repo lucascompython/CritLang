@@ -78,7 +78,6 @@ All help is appreciated!
 
 ## Known Bugs
 Sometimes for some reason semicolon are not needed.<br >
-Big numbers might get truncated / broken.
 
 ## License
 This project is licensed under the GPL3 license.
