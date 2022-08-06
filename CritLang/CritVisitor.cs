@@ -30,7 +30,7 @@ public class CritVisitor: CritBaseVisitor<object?>
 
         //OS Functions
         Variables["ReadText"] = new Func<object?[], object?>(ReadText);
-        //Variables["Time"] = new Func<object?[], object?>(Time);
+        Variables["Time"] = new Func<object?[], object?>(Time);
 
         //Gerenal Functions
         Variables["Convert"] = new Func<object?[], object?>(ConvertTo);
@@ -65,18 +65,16 @@ public class CritVisitor: CritBaseVisitor<object?>
         
     }
 
-    //TODO FIX THIS; UPDATE SHOULD NOW BE POSSIBLE WITH THE NEW BIG NUMBERS
-    //public static object? Time(object?[] args)
-    //{
-    //    if (args.Length != 0) throw new Exception("Time takes no arguments");
+ 
+    public static object? Time(object?[] args)
+    {
+        if (args.Length != 0) throw new Exception("Time takes no arguments");
 
-    //    //TimeSpan t = (DateTime.UtcNow - new DateTime(1970, 1, 1));
-    //    //double timestamp = t.TotalMilliseconds;
-    //    //return Math.Round(timestamp / 1000, 2);
-    //    //int m = DateTime.Now.Millisecond;
-    //    return DateTime.Now;
-    //}
-    
+        TimeSpan t = (DateTime.UtcNow - new DateTime(1970, 1, 1));
+        double timestamp = t.TotalMilliseconds;
+        return Math.Round(timestamp / 1000, 2);
+    }
+
     public static object? ReadText(object?[] args)
     {
         if (args.Length != 1) throw new Exception("ReadText expects 1 argument");
@@ -98,19 +96,19 @@ public class CritVisitor: CritBaseVisitor<object?>
             throw new Exception("ConvertTo expects 2 arguments, first one the variable to convert to and the second one being the type.");
         
 
-        string TypeToConvertTo = args[1]!.ToString()!;
+        string typeToConvertTo = args[1]!.ToString()!;
 
         string[] typeOptions = { "int", "float", "string", "bool" };
-        if (!typeOptions.Contains(TypeToConvertTo))
+        if (!typeOptions.Contains(typeToConvertTo))
             throw new Exception($"Invalid type...\nMust be one of the following types: {string.Join(", ", typeOptions)}");
         
-        object? ValueToConvert = args[0]!;
+        object? valueToConvert = args[0]!;
 
-        return ValueToConvert switch
+        return valueToConvert switch
         {
-            string => Convert.ToString(ValueToConvert),
-            bool => Convert.ToBoolean(ValueToConvert),
-            _ => TypeDispatcher(ValueToConvert)
+            string => Convert.ToString(valueToConvert),
+            bool => Convert.ToBoolean(valueToConvert),
+            _ => TypeDispatcher(valueToConvert)
         };
     }
 
