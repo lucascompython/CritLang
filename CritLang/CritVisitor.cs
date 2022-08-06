@@ -27,6 +27,8 @@ public class CritVisitor: CritBaseVisitor<object?>
         Variables["Sum"] = new Func<object?[], object?>(SumArr);
         Variables["Add"] = new Func<object?[], object?>(AddArr);
         Variables["Remove"] = new Func<object?[], object?>(RemoveArr);
+        Variables["Split"] = new Func<object?[], object?>(Split);
+        Variables["Len"] = new Func<object?[], object?>(Len);
 
         //OS Functions
         Variables["ReadText"] = new Func<object?[], object?>(ReadText);
@@ -36,8 +38,6 @@ public class CritVisitor: CritBaseVisitor<object?>
         Variables["Convert"] = new Func<object?[], object?>(ConvertTo);
         Variables["Delay"] = new Func<object?[], object?>(Delay);
         Variables["CritVersion"] = _version;
-        Variables["Split"] = new Func<object?[], object?>(Split);
-        Variables["Len"] = new Func<object?[], object?>(Len);
         Variables["Type"] = new Func<object?[], object?>(GetTypeOf);
 
     }
