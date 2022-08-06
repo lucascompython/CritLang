@@ -95,21 +95,22 @@ public class CritVisitor: CritBaseVisitor<object?>
     public static object? ConvertTo(object?[] args)
     {
         if (args.Length != 2)
-        {
             throw new Exception("ConvertTo expects 2 arguments, first one the variable to convert to and the second one being the type.");
-        }
+        
 
-        string[] typeOptions = new[] { "int", "float", "string", "bool" };
-        if (!typeOptions.Contains(args[1]!.ToString()!))
+        string TypeToConvertTo = args[1]!.ToString()!;
+
+        string[] typeOptions = { "int", "float", "string", "bool" };
+        if (!typeOptions.Contains(TypeToConvertTo))
             throw new Exception($"Invalid type...\nMust be one of the following types: {string.Join(", ", typeOptions)}");
-        //TODO ADD THE REST OF THE TYPES AUTOMATICALLY
-        return args[1]!.ToString() switch
+        
+        object? ValueToConvert = args[0]!;
+
+        return ValueToConvert switch
         {
-            "int" => Convert.ToInt32(args[0]),
-            "float" => Convert.ToSingle(args[0]),
-            "string" => Convert.ToString(args[0]),
-            "bool" => Convert.ToBoolean(args[0]),
-            _ => throw new Exception("Invalid type...")
+            string => Convert.ToString(ValueToConvert),
+            bool => Convert.ToBoolean(ValueToConvert),
+            _ => TypeDispatcher(ValueToConvert)
         };
     }
 
@@ -118,7 +119,7 @@ public class CritVisitor: CritBaseVisitor<object?>
     {
         if (args.Length != 1)
         {
-            throw new Exception("ReadLine expects 1 arguments, being the text to prompt to the use.");
+            throw new Exception("ReadLine expects 1 arguments, being the text to prompt to the user.");
         }
 
         string text = args[0]!.ToString()!;
@@ -623,8 +624,7 @@ public class CritVisitor: CritBaseVisitor<object?>
 
         if (left is null || right is null) return null;
         
-        string leftText = left!.ToString()!;
-        string rightText = right!.ToString()!;
+        
 
         left = TypeDispatcher(left);
         right = TypeDispatcher(right);
