@@ -4,7 +4,7 @@ using CritLang.Content;
 
 namespace CritLang;
 
-public class CritVisitor: CritBaseVisitor<object?>
+public sealed class CritVisitor: CritBaseVisitor<object?>
 {
     private Dictionary<string, object?> Variables { get; } = new();
 
@@ -42,7 +42,7 @@ public class CritVisitor: CritBaseVisitor<object?>
 
     }
 
-    public static object? GetTypeOf(object?[] args)
+    private static object? GetTypeOf(object?[] args)
     {
         if (args.Length == 0 || args.Length > 1)
             throw new Exception("Type only takes 1 argument.");
@@ -50,14 +50,14 @@ public class CritVisitor: CritBaseVisitor<object?>
         return args[0]!.GetType();
     }
 
-    public static object? Split(object?[] args)
+    private static object? Split(object?[] args)
     {
-        if (args.Length != 2) throw new Exception("Delay takes 2 arguments.");
+        if (args.Length != 2) throw new Exception("Split takes 2 arguments.");
         object[]? ol = args[0]?.ToString()?.Split(args[1]!.ToString()!.ToCharArray());
         return ol?.ToList();
     }
 
-    public static object? Delay(object?[] args)
+    private static object? Delay(object?[] args)
     {
         if (args.Length != 1) throw new Exception("Delay takes 1 argument that is the number of milliseconds to delay.");
         Task.Delay((int)args[0]!).Wait();
@@ -65,8 +65,8 @@ public class CritVisitor: CritBaseVisitor<object?>
         
     }
 
- 
-    public static object? Time(object?[] args)
+
+    private static object? Time(object?[] args)
     {
         if (args.Length != 0) throw new Exception("Time takes no arguments");
 
@@ -75,7 +75,7 @@ public class CritVisitor: CritBaseVisitor<object?>
         return Math.Round(timestamp / 1000, 2);
     }
 
-    public static object? ReadText(object?[] args)
+    private static object? ReadText(object?[] args)
     {
         if (args.Length != 1) throw new Exception("ReadText expects 1 argument");
 
@@ -90,7 +90,7 @@ public class CritVisitor: CritBaseVisitor<object?>
     }
 
 
-    public static object? ConvertTo(object?[] args)
+    private static object? ConvertTo(object?[] args)
     {
         if (args.Length != 2)
             throw new Exception("ConvertTo expects 2 arguments, first one the variable to convert to and the second one being the type.");

@@ -1,6 +1,6 @@
 ﻿namespace CritLang
 {
-    internal class CommandLineArgs
+    internal sealed class CommandLineArgs
     {
         /// <summary>
         /// Parse the arguments passed to the program.
