@@ -3,7 +3,8 @@ param (
       [switch]$run = $false,
       [switch]$publish = $false,
       [string]$target = $null,
-      [switch]$help = $false
+      [switch]$help = $false,
+      [string]$proj = "CritLang.csproj"
 )
 
 
@@ -14,6 +15,7 @@ if ($help) {
       Write-Host "  -run: Run the application"
       Write-Host "  -publish: Publish the application"
       Write-Host "  -target: The target to publish for"
+      Write-Host "  -proj: The project to build"
       Write-Host "  -help: Show this help"
       exit
 }
@@ -26,7 +28,7 @@ if ($run) {
    if ($target -eq $null) {
       throw "A file to run must be specified"
    }
-   return dotnet run -- $target
+   return dotnet run --project $proj $target
 }
 
 if ($publish) {
