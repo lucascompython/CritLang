@@ -45,7 +45,6 @@
 		<Content Include=".\antlr\*.cs" />
 	</ItemGroup>
 	<ItemGroup>
-	  <Compile Include="C:\Users\lucas\Desktop\CritVisitor.cs" Link="CritVisitor.cs" />
 	  <Compile Include="Content\.antlr\CritBaseListener.cs" />
 	  <Compile Include="Content\.antlr\CritBaseVisitor.cs" />
 	  <Compile Include="Content\.antlr\CritLexer.cs" />
