@@ -1,8 +1,8 @@
 ﻿using Antlr4.Runtime;
+using Antlr4.Runtime.Tree;
 using CritLang;
-using CritLang.Content;
 
-const string VERSION = "v0.1.11-beta";
+const string VERSION = "v0.2.0-beta";
 
 string fileName = CommandLineArgs.Parse(args, VERSION);
 
@@ -31,7 +31,7 @@ var critLexer = new CritLexer(inputStream);
 var commonTokenStream = new CommonTokenStream(critLexer);
 var critParser = new CritParser(commonTokenStream);
 var critContext = critParser.program();
-var visitor = new CritVisitor(VERSION);
+var visitor = new CritMain(VERSION);
 
 visitor.Visit(critContext);
 

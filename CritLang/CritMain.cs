@@ -1,22 +1,23 @@
 ﻿using System.Globalization;
 using System.Numerics;
-using CritLang.Content;
+
+
 
 namespace CritLang;
 
-public sealed class CritVisitor: CritBaseVisitor<object?>
+public sealed class CritMain : CritBaseVisitor<object?>
 {
     private Dictionary<string, object?> Variables { get; } = new();
 
 
 
-    public CritVisitor(string version)
+    public CritMain(string version)
     {
         string _version = version;
         //Math Functions
+        Variables["Pow"] = new Func<object?[], object?>(Pow);
         Variables["PI"] = Math.PI;
         Variables["Sqrt"] = new Func<object?[], object?>(Sqrt);
-        Variables["Pow"] = new Func<object?[], object?>(Pow);
 
         //Console Functions
         Variables["Write"] = new Func<object?[], object?>(Write);
@@ -46,7 +47,7 @@ public sealed class CritVisitor: CritBaseVisitor<object?>
     {
         if (args.Length == 0 || args.Length > 1)
             throw new Exception("Type only takes 1 argument.");
-        
+
         return args[0]!.GetType();
     }
 
@@ -62,7 +63,7 @@ public sealed class CritVisitor: CritBaseVisitor<object?>
         if (args.Length != 1) throw new Exception("Delay takes 1 argument that is the number of milliseconds to delay.");
         Task.Delay((int)args[0]!).Wait();
         return null;
-        
+
     }
 
 
@@ -80,7 +81,7 @@ public sealed class CritVisitor: CritBaseVisitor<object?>
         if (args.Length != 1) throw new Exception("ReadText expects 1 argument");
 
         try
-        { 
+        {
             return File.ReadAllText(args[0]!.ToString()!);
         }
         catch (Exception e)
@@ -94,14 +95,14 @@ public sealed class CritVisitor: CritBaseVisitor<object?>
     {
         if (args.Length != 2)
             throw new Exception("ConvertTo expects 2 arguments, first one the variable to convert to and the second one being the type.");
-        
+
 
         string typeToConvertTo = args[1]!.ToString()!;
 
         string[] typeOptions = { "int", "float", "string", "bool" };
         if (!typeOptions.Contains(typeToConvertTo))
             throw new Exception($"Invalid type...\nMust be one of the following types: {string.Join(", ", typeOptions)}");
-        
+
         object? valueToConvert = args[0]!;
 
         return valueToConvert switch
@@ -112,7 +113,7 @@ public sealed class CritVisitor: CritBaseVisitor<object?>
         };
     }
 
-    
+
     private static object? ReadLine(object?[] args)
     {
         if (args.Length != 1)
@@ -125,7 +126,7 @@ public sealed class CritVisitor: CritBaseVisitor<object?>
         return Console.ReadLine();
 
     }
-    
+
 
     private static object? RemoveArr(object?[] args)
     {
@@ -133,7 +134,7 @@ public sealed class CritVisitor: CritBaseVisitor<object?>
         {
             throw new Exception("Remove expects 2 arguments, first one the array and the second ono the index.");
         }
-        
+
         if (args[0] is List<object> objArr)
         {
             objArr.RemoveAt((int)args[1]!);
@@ -143,10 +144,10 @@ public sealed class CritVisitor: CritBaseVisitor<object?>
     }
 
 
-    private static object? Pow(object?[] args) => args.Length is not 2 
-        ? throw new Exception("Pow expects 2 arguments.") 
+    private static object? Pow(object?[] args) => args.Length is not 2
+        ? throw new Exception("Pow expects 2 arguments.")
         : (float)(Math.Pow(Convert.ToSingle(args[0]!), Convert.ToSingle(args[1]!)));
-    
+
     private static object? Len(object?[] args)
     {
         if (args.Length is not 1)
@@ -159,7 +160,7 @@ public sealed class CritVisitor: CritBaseVisitor<object?>
             _ => new Exception("Len expects an array or string")
         };
     }
-    
+
 
     private static object? AddArr(object?[] args)
     {
@@ -182,11 +183,11 @@ public sealed class CritVisitor: CritBaseVisitor<object?>
 
         if (args[0] is List<object> objArr)
             return (float)objArr.Sum(Convert.ToDouble);
-        
+
         throw new Exception("Sum: Argument is not a valid array.");
     }
-    
-    
+
+
 
     private static object? Sqrt(object?[] arg)
     {
@@ -228,7 +229,7 @@ public sealed class CritVisitor: CritBaseVisitor<object?>
                 foreach (var obj in objArr)
                     Console.WriteLine(obj);
                 continue;
-            } 
+            }
             Console.WriteLine(arg);
         }
         return null;
@@ -245,19 +246,20 @@ public sealed class CritVisitor: CritBaseVisitor<object?>
     //    return base.VisitConstantExpression(context);
     //}
 
-    
+
 
 
     public override object? VisitFunctionCall(CritParser.FunctionCallContext context)
     {
+
         var name = context.IDENTIFIER().GetText();
         var args = context.expression().Select(Visit).ToArray();
 
         if (!Variables.ContainsKey(name))
             throw new Exception($"Function {name} not found");
-        
 
-        
+
+
         if (Variables[name] is not Func<object?[], object?> func)
             throw new Exception($"Function {name} is not a function");
 
@@ -276,7 +278,7 @@ public sealed class CritVisitor: CritBaseVisitor<object?>
         var value = Visit(context.expression());
 
         var op = context.assignmentOp().GetText();
-        
+
         if (varName.Contains('[') && varName.Contains(']'))
         {
             string[] variableHelper = varName.Replace("]", string.Empty).Split('[');
@@ -306,47 +308,47 @@ public sealed class CritVisitor: CritBaseVisitor<object?>
             {
                 vO.Add(value!);
             }
-            
+
         }
-        
+
         else switch (op)
         {
-            case "*=":
-            {
-                var varValue = Convert.ToSingle(Variables[varName]!);
-                Variables[varName] = varValue * Convert.ToSingle(value!);
-                break;
+                case "*=":
+                    {
+                        var varValue = Convert.ToSingle(Variables[varName]!);
+                        Variables[varName] = varValue * Convert.ToSingle(value!);
+                        break;
+                    }
+                case "/=":
+                    {
+                        var varValue = Convert.ToSingle(Variables[varName]!);
+                        Variables[varName] = varValue / Convert.ToSingle(value!);
+                        break;
+                    }
+                case "%=":
+                    {
+                        var varValue = Convert.ToSingle(Variables[varName]!);
+                        Variables[varName] = varValue % Convert.ToSingle(value!);
+                        break;
+                    }
+                case "+=":
+                    {
+                        var varValue = Convert.ToSingle(Variables[varName]!);
+                        Variables[varName] = varValue + Convert.ToSingle(value!);
+                        break;
+                    }
+                case "-=":
+                    {
+                        var varValue = Convert.ToSingle(Variables[varName]!);
+                        Variables[varName] = varValue - Convert.ToSingle(value!);
+                        break;
+                    }
+                default:
+                    Variables[varName] = value;
+                    break;
             }
-            case "/=":
-            {
-                var varValue = Convert.ToSingle(Variables[varName]!);
-                Variables[varName] = varValue / Convert.ToSingle(value!);
-                break;
-            }
-            case "%=":
-            {
-                var varValue = Convert.ToSingle(Variables[varName]!);
-                Variables[varName] = varValue % Convert.ToSingle(value!);
-                break;
-            }
-            case "+=":
-            {
-                var varValue = Convert.ToSingle(Variables[varName]!);
-                Variables[varName] = varValue + Convert.ToSingle(value!);
-                break;
-            }
-            case "-=":
-            {
-                var varValue = Convert.ToSingle(Variables[varName]!);
-                Variables[varName] = varValue - Convert.ToSingle(value!);
-                break;
-            }
-            default:
-                Variables[varName] = value;
-                break;
-        }
-        
-        
+
+
         return null;
     }
 
@@ -359,7 +361,7 @@ public sealed class CritVisitor: CritBaseVisitor<object?>
             string[] variableHelper = varName.Replace("]", string.Empty).Split('[');
             string varWithoutIndex = variableHelper[0];
             string index = variableHelper[1];
-            
+
 
             var variable = Variables[varWithoutIndex];
             if (int.TryParse(index, out _))
@@ -378,7 +380,7 @@ public sealed class CritVisitor: CritBaseVisitor<object?>
                 throw new Exception($"Variable {varWithoutIndex} not found");
             }
         }
-        
+
 
         //TODO ADD SOMETHING LIKE THIS
         //if (varName.Contains('.'))
@@ -400,7 +402,7 @@ public sealed class CritVisitor: CritBaseVisitor<object?>
 
         if (!Variables.ContainsKey(varName))
             throw new Exception($"Variable '{varName}' is not defined");
-        
+
 
         return Variables[varName];
 
@@ -409,7 +411,7 @@ public sealed class CritVisitor: CritBaseVisitor<object?>
 
     public override object? VisitConstant(CritParser.ConstantContext context)
     {
-        
+
         if (context.INTEGER() is { } i)
         {
             string text = i.GetText();
@@ -427,10 +429,10 @@ public sealed class CritVisitor: CritBaseVisitor<object?>
         if (context.FLOAT() is { } f)
         {
             string text = f.GetText();
-            
+
             return text.Split('.')[0].Length >= 40 ? double.Parse(text, CultureInfo.InvariantCulture) : float.Parse(text, CultureInfo.InvariantCulture);
         }
-        
+
         if (context.STRING() is { } s)
             return s.GetText()[1..^1];
 
@@ -444,8 +446,8 @@ public sealed class CritVisitor: CritBaseVisitor<object?>
             var anyLst = new List<object>();
             if (strArr.Length <= 1)
                 return anyLst;
-        
-            
+
+
 
 
             foreach (string element in strArr)
@@ -475,10 +477,15 @@ public sealed class CritVisitor: CritBaseVisitor<object?>
 
         var op = context.addOp().GetText();
 
+
+
+        string leftString = left.ToString()!;
+        string rightString = right.ToString()!;
+
         return op switch
         {
             "+" => Add(left, right),
-            "-" => Subtract(left, right),
+            "-" => (double.TryParse(leftString, out double newLeft) && double.TryParse(rightString, out double newRight)) ? Subtract(newLeft, newRight) : throw new Exception($"Cant subtract {leftString} with {rightString}."),
             _ => throw new NotImplementedException()
         };
 
@@ -490,30 +497,65 @@ public sealed class CritVisitor: CritBaseVisitor<object?>
         var right = Visit(context.expression(1));
 
 
-        left = TypeDispatcher(left!);
-        right = TypeDispatcher(right!);
-        
+        //left = TypeDispatcher(left!);
+        //right = TypeDispatcher(right!);
+
 
         var op = context.multOp().GetText();
-
+        var newLeft = double.Parse(left!.ToString()!);
+        var newRight = double.Parse(right!.ToString()!);
         return op switch
         {
-            "*" => Multiply(left, right),
-            "/" => Divide(left, right),
-            "%" => Modulus(left, right),
+            "*" => Multiply(newLeft, newRight),
+            "/" => Divide(newLeft, newRight),
+            "%" => Modulus(newLeft, newRight),
             _ => throw new NotImplementedException()
         };
     }
 
-    private static object? Add(dynamic left, dynamic right) => left + right;
 
-    private static object? Subtract(dynamic left, dynamic right) => left - right;
-    
-    private static object? Multiply(dynamic left, dynamic right) => left * right;
+    private Type NumberType(object? left, object? right)
+    {
+        if (left is int || right is int)
+            return typeof(int);
 
-    private static object? Divide(dynamic left, dynamic right) => left / right;
+        if (left is long || right is long)
+            return typeof(long);
 
-    private static object? Modulus(dynamic left, dynamic right) => left % right;
+        if (left is float || right is float)
+            return typeof(float);
+
+        if (left is double || right is double)
+            return typeof(double);
+
+        if (left is BigInteger || right is BigInteger)
+            return typeof(BigInteger);
+
+        throw new Exception("No number type found");
+    }
+
+
+
+    private static object? Add(object left, object right) => (left, right) switch
+    {
+        (string leftString, string rightString) => leftString + rightString,
+        (int or long or float or double, int or long or float or double) => Convert.ToDouble(left.ToString()) + Convert.ToDouble(right.ToString()),
+        (_, string) => left.ToString() + right.ToString(),
+        (string, _) => left.ToString() + right.ToString(),
+        _ => throw new NotImplementedException("Something went wrong.")
+    };
+
+    private static double ol(object left, object right) {
+        Console.WriteLine($"Left: {left} Right: {right}");
+        return (double)left + (double)right;
+    }
+    private static object? Subtract<T>(T left, T right) where T : INumber<T> => left - right;
+
+    private static object? Multiply<T>(T left, T right) where T : INumber<T> => left * right;
+
+    private static object? Divide<T>(T left, T right) where T : INumber<T> => left / right;
+
+    private static object? Modulus<T>(T left, T right) where T : INumber<T> => left % right;
 
 
 
@@ -539,12 +581,12 @@ public sealed class CritVisitor: CritBaseVisitor<object?>
                     // do nothing
                 }
             }
-            
-           
+
+
         }
         else
         {
-            throw new Exception($"Condition must be a boolean");
+            throw new Exception("Condition must be a boolean");
         }
 
         return null;
@@ -588,7 +630,7 @@ public sealed class CritVisitor: CritBaseVisitor<object?>
     }
 
     //TODO OPTIMIZE THIS SHIT
-    private static dynamic TypeDispatcher(dynamic variable)
+    private static object? TypeDispatcher(object? variable)
     {
         if (variable == null) throw new ArgumentNullException(nameof(variable));
 
@@ -600,8 +642,8 @@ public sealed class CritVisitor: CritBaseVisitor<object?>
                 ? double.Parse(variableText, CultureInfo.InvariantCulture)
                 : float.Parse(variableText, CultureInfo.InvariantCulture);
         }
-        
-    
+
+
         if (int.TryParse(variableText, out int variableTextInt))
             return variableTextInt;
 
@@ -609,7 +651,7 @@ public sealed class CritVisitor: CritBaseVisitor<object?>
             return variableTextLong;
 
         return BigInteger.TryParse(variableText, out var variableTextBiggie) ? variableTextBiggie : variable;
-        
+
         //TODO MAKE A ERROR MESSAGE HERE OF THE TYPE OF VARIABLE
         //throw new Exception($"Something when wrong when trying to figure out the type of {variableText}.");
     }
@@ -621,64 +663,67 @@ public sealed class CritVisitor: CritBaseVisitor<object?>
         var right = Visit(context.expression(1));
 
         if (left is null || right is null) return null;
-        
-        
-
-        left = TypeDispatcher(left);
-        right = TypeDispatcher(right);
 
 
+        //Console.WriteLine(left.GetType());
+
+        //left = TypeDispatcher(left);
+        //right = TypeDispatcher(right);
+
+
+
+
+        //if(!double.TryParse(left.ToString()!, out double newLeft))
+        //{
+            //string newLeftString = left.ToString()!;    
+        //}
+        //if(!double.TryParse(right.ToString()!, out double newRight))
+        //{
+            //string newRightString = right.ToString()!;
+        //}
+
         
 
-        if (left is BigInteger && right is float or double)
-        {
-            object obj = left; BigInteger biggie = (BigInteger)obj; left = (double)biggie;
-        }
         
-        else if (right is BigInteger && left is float or double)
-        {
-            object obj = right; BigInteger biggie = (BigInteger)obj; right = (double)biggie;
-        }
 
-        
+        //if (left is BigInteger && right is float or double)
+        //{
+        //    object obj = left; BigInteger biggieLeft = (BigInteger)obj; left = (double)biggieLeft;
+        //}
+
+        //else if (right is BigInteger && left is float or double)
+        //{
+        //    object obj = right; BigInteger biggieLeft = (BigInteger)obj; right = (double)biggieLeft;
+        //}
+
+        string leftString = left.ToString()!;
+        string rightString = right.ToString()!;
         var op = context.compareOp().GetText();
-
         return op switch
         {
-            "==" => IsEquals(left, right),
-            "!=" => NotEquals(left, right),
-            ">" => GreaterThan(left, right),
-            "<" => LessThan(left, right),
-            ">=" => GreaterThanOrEqual(left, right),
-            "<=" => LessThanOrEqual(left, right),
-            _ => throw new NotImplementedException()
+            "==" => (double.TryParse(leftString, out double newLeft) && double.TryParse(rightString, out double newRight)) ? IsEquals(newLeft, newRight) : IsEquals(leftString, rightString),
+            "!=" => (double.TryParse(leftString, out double newLeft) && double.TryParse(rightString, out double newRight)) ? NotEquals(newLeft, newRight) : IsEquals(leftString, rightString),
+            ">" => (double.TryParse(leftString, out double newLeft) && double.TryParse(rightString, out double newRight)) ? GreaterThan(newLeft, newRight) : throw new Exception($"Can't compare {leftString} and {rightString} with >"),
+            "<" => (double.TryParse(leftString, out double newLeft) && double.TryParse(rightString, out double newRight)) ? LessThan(newLeft, newRight) : throw new Exception($"Can't compare {leftString} and {rightString} with <"),
+            ">=" => (double.TryParse(leftString, out double newLeft) && double.TryParse(rightString, out double newRight)) ? GreaterThanOrEqual(newLeft, newRight) : throw new Exception($"Can't compare {leftString} and {rightString} with >="),
+            "<=" => (double.TryParse(leftString, out double newLeft) && double.TryParse(rightString, out double newRight)) ? LessThanOrEqual(newLeft, newRight) : throw new Exception($"Can't compare {leftString} and {rightString} with <="),
+            _ => throw new NotImplementedException("Something went wrong")
 
         };
     }
 
-    private static bool IsEquals(dynamic left, dynamic right)
-    {
+    private static bool IsEquals<T>(T left, T right) where T : IComparable<T> => left.ToString() == right.ToString();
 
-
-        if (left is bool || right is bool)
-            return left?.ToString() == right?.ToString();
-
-        if (left is string || right is string)
-            return left?.ToString() == right?.ToString();
-
-        return left == right;
-    }
-
-    private static bool NotEquals(dynamic left, dynamic right) => left != right;
+    private static bool NotEquals<T>(T left, T right) => !EqualityComparer<T>.Default.Equals(left, right);
     
-    private static bool GreaterThanOrEqual(dynamic left, dynamic right) => left >= right;
+    private static bool GreaterThanOrEqual<T>(T left, T right) where T : INumber<T> => left >= right;
 
-    private static bool LessThanOrEqual(dynamic left, dynamic right) => left <= right;
-    
-    private static bool GreaterThan(dynamic left, dynamic right) => left > right;
-    
-    private static bool LessThan(dynamic left, dynamic right) => left < right;
-    
+    private static bool LessThanOrEqual<T>(T left, T right) where T : INumber<T> => left <= right;
+
+    private static bool GreaterThan<T>(T left, T right) where T : INumber<T> => left > right;
+
+    private static bool LessThan<T>(T left, T right) where T : INumber<T> => left < right;
+
     private static bool IsTrue(object? value) => value switch
     {
         bool b => b,

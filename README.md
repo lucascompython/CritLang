@@ -48,8 +48,9 @@ until num > 10 {
 
 - [X] Documentation.
 - [X] Automatically detect the length of a number and assign to it the corret type (int, long, float and double)
-- [ ] Add arrays, python-like dictionaries and some more basic data structures.
-- [ ] Add a special block of code to query with [NANQL](https://github.com/lucascompython/NANQL).
+- [ ] Add Crit Types. 
+- [ ] Add Python like dictionaries.
+- [ ] Integrate [NANQL](https://github.com/lucascompython/NANQL) with Crit's dictionaries and arrays.
 - [ ] Add the hability of making functions.
 - [ ] Add the hability of importing other files.
 - [ ] Add interactive mode (with a REPL).
@@ -62,11 +63,17 @@ until num > 10 {
 - [ ] Make a compiler.
 
 
-## How to get it
+<!--## How to get it
 
 You can get it from just cloning this repository and then running it (`dotnet run`).<br />
 Or you can clone this repository and then install it globally as a dotnet package (`./install_globally.ps1`) and then just use `crit`.<br />
-Or download the executable [here](https://github.com/lucascompython/CritLang/releases) and then you can just use that file.
+Or download the executable [here](https://github.com/lucascompython/CritLang/releases) and then you can just use that file.-->
+## Run It
+```powershell
+git clone https://github.com/lucascompython/CritLang.git
+cd CritLang/CritLang
+./build.ps1 -help
+```
 
 
 
@@ -77,7 +84,8 @@ All help is appreciated!
 
 
 ## Known Bugs
-Sometimes for some reason semicolon are not needed.<br >
+Sometimes for some reason semicolon are not actually mandatory.  
+You might get some syntax warnings that are not really syntax warnings, just ignore them.
 
 ## License
 This project is licensed under the GPL3 license.

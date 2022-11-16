@@ -1,4 +1,4 @@
-start = Time()
+start = Time();
 total = [];
 
 rounds = 25000;
@@ -41,6 +41,6 @@ while k < rounds {
     k += 1;
 }
 composites = rounds - primes;
-end = Time()
-total_time = end - start
+end = Time();
+total_time = end - start;
 WriteLine("Found " + primes + " and " + composites + " composites in " + rounds + " numbers! " + " Time: " + total_time + " seconds");
