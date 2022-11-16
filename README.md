@@ -7,8 +7,8 @@ Why the name? Because in League of Legends, **no crit = no bitches**.<br>
 
 The language is [turing complete](https://en.wikipedia.org/wiki/Turing_completeness) (I think) so theoretically you can solve any computational problem with Crit!<br>
 
-The syntax is somewhat similar to Golang's syntax.
-
+The syntax is somewhat similar to Golang's syntax.  
+Check the Change log [here](CHANGELOG.MD).
 
 ## Code Preview
 ```rust
