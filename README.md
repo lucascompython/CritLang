@@ -60,7 +60,7 @@ cd CritLang/CritLang
 
 - [X] Documentation.
 - [X] Automatically detect the length of a number and assign to it the corret type (int, long, float and double)
-- [ ] Add Crit Types. 
+- [ ] Add Crit Types & remove all object types. 
 - [ ] Add Python like dictionaries.
 - [ ] Integrate [NANQL](https://github.com/lucascompython/NANQL) with Crit's dictionaries and arrays.
 - [ ] Add the hability of making functions.

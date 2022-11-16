@@ -19,7 +19,7 @@ if ($help) {
 }
 
 if ($codegeneration) {
-   java -jar .\antlr-4.11.1-complete.jar -Dlanguage=CSharp .\Content\Crit.g4 -visitor -encoding utf8 -Xexact-output-dir -o .\Content\.antlr\
+   java -jar ./antlr-4.11.1-complete.jar -Dlanguage=CSharp ./Content/Crit.g4 -visitor -encoding utf8 -Xexact-output-dir -o ./Content/.antlr/
    Write-Host "Generated code from grammar!"
 }
 if ($run) {
