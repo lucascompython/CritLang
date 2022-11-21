@@ -90,7 +90,7 @@ All help is appreciated!
 
 
 ## Known Bugs
-Right now you can't use arrays inside arrays nor inside dictionaries and vice versa.   
+Right now you can't use arrays inside arrays nor inside dictionaries and vice versa. This will be fixed in the next update.     
 
 ## License
 This project is licensed under the GPL3 license.
