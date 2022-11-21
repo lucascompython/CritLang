@@ -8,11 +8,11 @@ line: statement | ifBlock | whileBlock;
 
 statement: (assignment|functionCall) ';';
 
-ifBlock: 'if' expression block ('else' elseIfBlock);
+ifBlock: 'if' expression block ('else' elseIfBlock)?;
 
 elseIfBlock: block | ifBlock;
 
-whileBlock: WHILE expression block ('else' elseIfBlock);
+whileBlock: WHILE expression block ('else' elseIfBlock)?;
 
 WHILE: 'while' | 'until';
 
@@ -44,18 +44,21 @@ boolOp: BOOL_OPERATOR;
 
 BOOL_OPERATOR: 'and' | 'or' | 'xor';
 
-constant: INTEGER | FLOAT | STRING | BOOL | array | NULL;
+constant: INTEGER | FLOAT | STRING | BOOL | array | dictionary | NULL;
 //arrayIndex: constant '[' INTEGER ']';
 INTEGER: [0-9]+;
 //SEPERATOR: '.' | ',';
 FLOAT: [0-9]+ '.' [0-9]+;
 STRING: ('"' ~'"'* '"') | ('\'' ~'\''* '\'');
 BOOL: 'true' | 'false';
-array: '[' (constant (',' constant)*)? ']'; 
+array: '[' ((constant | IDENTIFIER) (',' (constant | IDENTIFIER))*?)? ']'; 
+//array: '[' (constoridentifier (',' constoridentifier)*?)? ']';
+dictionary: '{' (STRING ':' (constant | IDENTIFIER) (',' (constant ':' (constant | IDENTIFIER)))*?)? '}';
 //index: '[' INTEGER ']';
+constoridentifier: constant | IDENTIFIER;
 NULL: 'null';
 
-INDEX: '[' IDENTIFIER ']' | '[' INTEGER ']';
+fragment INDEX: '[' (IDENTIFIER | INTEGER | STRING) ']';
 INCREMENTOP: '++' | '--';
 
 block: '{' line* '}';
@@ -63,8 +66,5 @@ block: '{' line* '}';
 WS:  [ \t\r\n]+ -> skip;
 IDENTIFIER: [a-zA-Z_][a-zA-Z0-9_]* (INDEX)* ;
 
-Comment
-  :  '#' ~( '\r' | '\n' )*
-  ;
-
-
+LINECOMMENT: '#' ~[\r\n]* -> skip;
+MULTICOMMENT: '/*' .*? '*/' -> skip;

@@ -60,9 +60,10 @@ cd CritLang/CritLang
 
 - [X] Documentation.
 - [X] Automatically detect the length of a number and assign to it the corret type (int, long, float and double)
-- [ ] Add Crit Types & remove all object types. 
-- [ ] Add Python like dictionaries.
+- [X] Add Python like dictionaries.
 - [ ] Integrate [NANQL](https://github.com/lucascompython/NANQL) with Crit's dictionaries and arrays.
+- [ ] Seperate code into different files.
+- [ ] Add Crit's own types & remove most object types. 
 - [ ] Add the hability of making functions.
 - [ ] Add the hability of importing other files.
 - [ ] Add interactive mode (with a REPL).
@@ -89,8 +90,7 @@ All help is appreciated!
 
 
 ## Known Bugs
-Sometimes for some reason semicolon are not actually mandatory.  
-You might get some syntax warnings that are not really syntax warnings, just ignore them.
+Right now you can't use arrays inside arrays nor inside dictionaries and vice versa.   
 
 ## License
 This project is licensed under the GPL3 license.

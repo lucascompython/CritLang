@@ -1,5 +1,6 @@
 ﻿using System.Globalization;
 using System.Numerics;
+using System.Text;
 
 
 
@@ -45,7 +46,7 @@ public sealed class CritMain : CritBaseVisitor<object?>
 
     private static object? GetTypeOf(object?[] args)
     {
-        if (args.Length == 0 || args.Length > 1)
+        if (args.Length is 0 or > 1)
             throw new Exception("Type only takes 1 argument.");
 
         return args[0]!.GetType();
@@ -209,13 +210,32 @@ public sealed class CritMain : CritBaseVisitor<object?>
     {
         foreach (var arg in args)
         {
-            if (arg is List<object> objArr)
+            switch (arg)
             {
-                foreach (var obj in objArr)
-                    Console.Write(obj);
-                continue;
+                case List<object> objArr:
+                {
+
+                    var arrString = new StringBuilder();
+                    arrString.Append('[');
+                    arrString.Append(string.Join(',', objArr));
+                    arrString.Append(']');
+                    Console.Write(arrString.ToString());
+                    break;
+                }
+                case Dictionary<string, object> objDict:
+                {
+                    var dictString = new StringBuilder();
+                    dictString.Append('{');
+                    var dict = objDict.Select(x => $"{x.Key}: {x.Value}");
+                    dictString.Append(string.Join(',', dict));
+                    dictString.Append('}');
+                    Console.Write(dictString.ToString());
+                    break;
+                }
+                default:
+                    Console.Write(arg);
+                    break;
             }
-            Console.Write(arg);
         }
         return null;
     }
@@ -224,13 +244,34 @@ public sealed class CritMain : CritBaseVisitor<object?>
     {
         foreach (var arg in args)
         {
-            if (arg is List<object> objArr)
+            switch (arg)
             {
-                foreach (var obj in objArr)
-                    Console.WriteLine(obj);
-                continue;
+                case List<object> objArr:
+                {
+
+                    var arrString = new StringBuilder();
+                    arrString.Append('[');
+                    arrString.Append(string.Join(',', objArr));
+                    arrString.Append(']');
+                    Console.WriteLine(arrString.ToString());
+                    break;
+                }
+                case Dictionary<string, object> objDict:
+                {
+                    
+
+                    var dictString = new StringBuilder();
+                    dictString.Append('{');
+                    var dict = objDict.Select(x => $"{x.Key}: {x.Value}");
+                    dictString.Append(string.Join(',', dict));
+                    dictString.Append('}');
+                    Console.WriteLine(dictString.ToString());
+                    break;
+                }
+                default:
+                    Console.WriteLine(arg);
+                    break;
             }
-            Console.WriteLine(arg);
         }
         return null;
     }
@@ -274,41 +315,50 @@ public sealed class CritMain : CritBaseVisitor<object?>
     public override object? VisitAssignment(CritParser.AssignmentContext context)
     {
         var varName = context.IDENTIFIER().GetText();
-
         var value = Visit(context.expression());
 
         var op = context.assignmentOp().GetText();
 
         if (varName.Contains('[') && varName.Contains(']'))
         {
-            string[] variableHelper = varName.Replace("]", string.Empty).Split('[');
+            
+            string[] variableHelper = varName.Trim(']').Split('[');
             string varWithoutIndex = variableHelper[0];
             string index = variableHelper[1];
             //Variables[varWithoutIndex[..^1]]?[int.Parse(index.ToString())] = value;
-            //Console.WriteLine(Variables[varWithoutIndex[..^1]]?[int.Parse(index.ToString())]);
             var variable = Variables[varWithoutIndex];
-            if (variable is not List<object> vO) return null;
+            switch (variable)
+            {
+                case List<object> vO:
+                    try
+                    {
+                        if (int.TryParse(index, out int intIndex))
+                        {
+                            vO[intIndex] = value!;
+                        }
+                        else if (Variables.ContainsKey(varWithoutIndex))
+                        {
+                            var varValue = Variables[index];
+                        
+                            return varValue is not null ? vO[(int)Math.Round(Convert.ToSingle(varValue), 0)] = varValue : throw new Exception("Index not valid.");
+                        }
+                    }
+                    catch (ArgumentOutOfRangeException)
+                    {
+                        vO.Add(value!);
+                    }
+
+                    break;
+                case Dictionary<string, object> dictionary:
+                    return dictionary[index] = value!;
+                default:
+                    throw new Exception("Variable is not an array");
+            }
+            
             //foreach (var ola in vO)
             //{
             //    Console.WriteLine(ola);
             //}
-            try
-            {
-                if (int.TryParse(index, out int intIndex))
-                {
-                    vO[intIndex] = value!;
-                }
-                else if (Variables.ContainsKey(varWithoutIndex))
-                {
-                    var varValue = Variables[index];
-                    return varValue is not null ? vO[(int)Math.Round(Convert.ToSingle(varValue), 0)] = varValue : throw new Exception("Index not valid.");
-                }
-            }
-            catch (ArgumentOutOfRangeException)
-            {
-                vO.Add(value!);
-            }
-
         }
 
         else switch (op)
@@ -358,22 +408,38 @@ public sealed class CritMain : CritBaseVisitor<object?>
         var varName = context.IDENTIFIER().GetText();
         if (varName.Contains('[') && varName.Contains(']'))
         {
-            string[] variableHelper = varName.Replace("]", string.Empty).Split('[');
+            string[] variableHelper = varName.Trim(']').Split('[');
             string varWithoutIndex = variableHelper[0];
-            string index = variableHelper[1];
+            string indexString = variableHelper[1];
 
 
             var variable = Variables[varWithoutIndex];
-            if (int.TryParse(index, out _))
+
+            if (int.TryParse(indexString, out int index))
             {
                 if (variable is List<object> vO)
-                    return vO[int.Parse(index)];
+                    return vO[index];
             }
-            else if (Variables.ContainsKey(varWithoutIndex))
+            else if (variable is Dictionary<string, object> dictionary)
             {
-                var value = Variables[index];
+                indexString = indexString.Trim('"');
+                try
+                {
+                    return dictionary[indexString];
+                }
+                catch (KeyNotFoundException)
+                {
+                    return dictionary[Variables[indexString]!.ToString()!];
+                }
+            }
+
+
+            else if (Variables.TryGetValue(indexString, out var value))
+            {
                 if (variable is List<object> vO)
+                {
                     return vO[int.Parse(value!.ToString() ?? throw new Exception("Index is not a number"))];
+                }
             }
             else
             {
@@ -435,6 +501,7 @@ public sealed class CritMain : CritBaseVisitor<object?>
 
         if (context.STRING() is { } s)
             return s.GetText()[1..^1];
+        
 
         if (context.BOOL() is { } b)
             return b.GetText() == "true";
@@ -444,21 +511,62 @@ public sealed class CritMain : CritBaseVisitor<object?>
         {
             string[] strArr = a.GetText()[1..^1].Split(',');
             var anyLst = new List<object>();
-            if (strArr.Length <= 1)
-                return anyLst;
+            
 
-
-
-
+            
             foreach (string element in strArr)
             {
-                if (element.StartsWith('"') && element.EndsWith('"'))
-                    anyLst.Add(element[1..^1]);
+                if (Variables.TryGetValue(element, out var value)) // if the value to assign to is a variable
+                {
+                    anyLst.Add(value!);
+                }
+                else if (double.TryParse(element, out double num)) // add numbers
+                    anyLst.Add(num);  
+                //TODO add arrays and dicts
+                //else if (element.StartsWith('[') && strArr.Last().EndsWith(']'))
+                //{
+                //    Console.WriteLine("sub array");
+                //    Console.WriteLine(element);
+                //    //anyLst.Add(VisitArray(context!)); //TODO check VisitArray
+                    
+                //    var innerList = new List<object>();
+                //    var innerArray = element[1..^1].Split(',');
+                //    foreach (var ele in innerArray)
+                //    {
+                //        innerList.Add(ele);
+                //    }
 
-                else
-                    anyLst.Add(int.TryParse(element, out int outi) ? outi : float.Parse(element, CultureInfo.InvariantCulture));
+
+                //    anyLst.Add(innerList);
+                //}
+                else // add strings
+                    anyLst.Add(element);
             }
             return anyLst;
+        }
+
+        if (context.dictionary() is { } d)
+        {
+            Dictionary<string, object> dict = new();
+            string[] strDict = d.GetText()[1..^1].Split(',');
+
+            foreach (string element in strDict)
+            {
+                string[] keyVal = element.Split(':');
+                if (keyVal.Length != 2) continue;
+                keyVal[0] = keyVal[0][1..^1];
+                if (Variables.TryGetValue(keyVal[1], out var value)) // if the value to assign to is a variable
+                    dict.Add(keyVal[0], value!);
+                else if (double.TryParse(keyVal[1], out double num)) // add numbers
+                    dict.Add(keyVal[0], num);
+                //TODO add arrays and dicts
+                else // add strings
+                    dict.Add(keyVal[0], keyVal[1]);
+
+            }
+
+            return dict;
+            
         }
 
         if (context.NULL() is { })
@@ -514,26 +622,6 @@ public sealed class CritMain : CritBaseVisitor<object?>
     }
 
 
-    private Type NumberType(object? left, object? right)
-    {
-        if (left is int || right is int)
-            return typeof(int);
-
-        if (left is long || right is long)
-            return typeof(long);
-
-        if (left is float || right is float)
-            return typeof(float);
-
-        if (left is double || right is double)
-            return typeof(double);
-
-        if (left is BigInteger || right is BigInteger)
-            return typeof(BigInteger);
-
-        throw new Exception("No number type found");
-    }
-
 
 
     private static object? Add(object left, object right) => (left, right) switch
@@ -545,10 +633,7 @@ public sealed class CritMain : CritBaseVisitor<object?>
         _ => throw new NotImplementedException("Something went wrong.")
     };
 
-    private static double ol(object left, object right) {
-        Console.WriteLine($"Left: {left} Right: {right}");
-        return (double)left + (double)right;
-    }
+
     private static object? Subtract<T>(T left, T right) where T : INumber<T> => left - right;
 
     private static object? Multiply<T>(T left, T right) where T : INumber<T> => left * right;

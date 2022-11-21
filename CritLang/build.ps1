@@ -4,9 +4,11 @@ param (
       [switch]$publish = $false,
       [string]$target = $null,
       [switch]$help = $false,
-      [string]$proj = "CritLang.csproj"
+      [string]$proj = "CritLang.csproj",
+      [switch]$version
 )
 
+$versionNumber = "0.2.1"
 
 
 if ($help) {
@@ -18,6 +20,10 @@ if ($help) {
       Write-Host "  -proj: The project to build"
       Write-Host "  -help: Show this help"
       exit
+}
+if ($version) {
+   Write-Host "CritLang version $versionNumber"
+   exit
 }
 
 if ($codegeneration) {

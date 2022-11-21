@@ -2,7 +2,7 @@
 using Antlr4.Runtime.Tree;
 using CritLang;
 
-const string VERSION = "v0.2.0-beta";
+const string VERSION = "v0.2.1-beta";
 
 string fileName = CommandLineArgs.Parse(args, VERSION);
 
