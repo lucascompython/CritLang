@@ -52,7 +52,9 @@ until num > 10 {
 ```
 
 ## Run It
-
+Download the binary [here](https://github.com/lucascompython/CritLang/tags).  
+OR  
+Build it
 ```powershell
 git clone https://github.com/lucascompython/CritLang.git
 cd CritLang/CritLang
