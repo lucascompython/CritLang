@@ -17,6 +17,7 @@
 		<PackageOutputPath>./nupkg</PackageOutputPath>
 		<PackageLicenseFile>LICENSE</PackageLicenseFile>
 		<PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+		<AssemblyName>crit</AssemblyName>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -43,7 +44,7 @@
 		<PackageReference Include="Antlr4BuildTasks" Version="12.1.0" PrivateAssets="all" />
 	</ItemGroup>
 	<ItemGroup>
-		<None Update=".\sieve.crit">
+		<None Include="..\Examples\sieve.crit">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
 	</ItemGroup>
