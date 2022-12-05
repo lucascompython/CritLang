@@ -1,32 +1,31 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>net7.0</TargetFramework>
-	<Version>0.2.1</Version>
-	<Authors>Lucas de Linhares</Authors>
-	<Description>Just another programming language</Description>
-	<FileDescription>Just another programming lanugage</FileDescription>
-	  
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-	  <WarningsAsErrors>Nullable</WarningsAsErrors>
-	  <Optimize>true</Optimize>
-    <PackAsTool>true</PackAsTool>
-  	<ToolCommandName>crit</ToolCommandName>
-	  <PackageOutputPath>./nupkg</PackageOutputPath>
-	  <PackageLicenseFile>LICENSE</PackageLicenseFile>
-	  <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
-	  <Platforms>AnyCPU;x64</Platforms>
-  </PropertyGroup>
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<TargetFramework>net7.0</TargetFramework>
+		<Version>0.2.1</Version>
+		<Authors>Lucas de Linhares</Authors>
+		<Description>Just another programming language</Description>
+		<FileDescription>Just another programming lanugage</FileDescription>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DebugType>embedded</DebugType>
-  </PropertyGroup>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<WarningsAsErrors>Nullable</WarningsAsErrors>
+		<Optimize>true</Optimize>
+		<PackAsTool>true</PackAsTool>
+		<ToolCommandName>crit</ToolCommandName>
+		<PackageOutputPath>./nupkg</PackageOutputPath>
+		<PackageLicenseFile>LICENSE</PackageLicenseFile>
+		<PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+	</PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DebugType>none</DebugType>
-  </PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+		<DebugType>embedded</DebugType>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+		<DebugType>none</DebugType>
+	</PropertyGroup>
 
 	<PropertyGroup>
 		<StripSymbols>true</StripSymbols>
@@ -37,34 +36,29 @@
 		<Content Include=".\antlr\*.cs" />
 	</ItemGroup>
 	<ItemGroup>
-	  <Compile Include="Content\.antlr\CritBaseListener.cs" />
-	  <Compile Include="Content\.antlr\CritBaseVisitor.cs" />
-	  <Compile Include="Content\.antlr\CritLexer.cs" />
-	  <Compile Include="Content\.antlr\CritListener.cs" />
-	  <Compile Include="Content\.antlr\CritParser.cs" />
-	  <Compile Include="Content\.antlr\CritVisitor.cs" />
+		<Compile Include="Content\.antlr\*.cs"/>
 	</ItemGroup>
 	<ItemGroup>
-	  <PackageReference Include="Antlr4.Runtime.Standard" Version="4.11.1" />
-	  <PackageReference Include="Antlr4BuildTasks" Version="12.1.0" PrivateAssets="all" />
+		<PackageReference Include="Antlr4.Runtime.Standard" Version="4.11.1" />
+		<PackageReference Include="Antlr4BuildTasks" Version="12.1.0" PrivateAssets="all" />
 	</ItemGroup>
 	<ItemGroup>
-	  <None Update=".\sieve.crit">
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  </None>
+		<None Update=".\sieve.crit">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
 	</ItemGroup>
 	<ItemGroup>
-	  <None Include="..\LICENSE">
-	    <Pack>True</Pack>
-	    <PackagePath>\</PackagePath>
-	  </None>
-	  <None Include="Content\.antlr\Crit.interp" />
-	  <None Include="Content\.antlr\Crit.tokens" />
-	  <None Include="Content\.antlr\CritLexer.interp" />
-	  <None Include="Content\.antlr\CritLexer.tokens" />
-	</ItemGroup>		
-	
-  <PropertyGroup >
+		<None Include="..\LICENSE">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
+		<None Include="Content\.antlr\Crit.interp" />
+		<None Include="Content\.antlr\Crit.tokens" />
+		<None Include="Content\.antlr\CritLexer.interp" />
+		<None Include="Content\.antlr\CritLexer.tokens" />
+	</ItemGroup>
+
+	<PropertyGroup>
 		<PublishAot>true</PublishAot>
-   </PropertyGroup>
+	</PropertyGroup>
 </Project>
