@@ -106,11 +106,14 @@ public sealed class CritMain : CritBaseVisitor<object?>
 
         object? valueToConvert = args[0]!;
 
-        return valueToConvert switch
+        return typeToConvertTo switch
         {
-            string => Convert.ToString(valueToConvert),
-            bool => Convert.ToBoolean(valueToConvert),
-            _ => TypeDispatcher(valueToConvert)
+            "string" => Convert.ToString(valueToConvert),
+            "bool" => Convert.ToBoolean(valueToConvert),
+            "int" => Convert.ToDouble(valueToConvert),
+            "float" => Convert.ToDouble(valueToConvert),
+            _ => throw new Exception("Failed to convert...")
+
         };
     }
 
