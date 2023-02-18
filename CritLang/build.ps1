@@ -27,6 +27,12 @@ if ($version) {
 }
 
 if ($codegeneration) {
+   if (!(Test-Path "./antlr-4.*")) {
+      Write-host "ANTLR now found!"
+      Write-host "Downloading ANTLR 4.11.1..."
+      wget "https://www.antlr.org/download/antlr-4.11.1-complete.jar"
+   }
+   
    java -jar ./antlr-4.11.1-complete.jar -Dlanguage=CSharp ./Content/Crit.g4 -visitor -encoding utf8 -Xexact-output-dir -o ./Content/.antlr/
    Write-Host "Generated code from grammar!"
 }
