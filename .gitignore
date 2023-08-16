@@ -8,5 +8,6 @@ CritLang/CritLang.csproj.user
 CritLang/Content/ola.txt
 
 .antlr
+antlr-*
 test.crit
 .vscode
