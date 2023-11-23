@@ -27,11 +27,11 @@ if ($version) {
 }
 
 if ($codegeneration) {
-   if (!(Test-Path "./antlr-4.*")) {
+   if (!(Test-Path "./antlr.jar")) {
       Write-host "ANTLR not found!"
-      Write-host "Downloading ANTLR 4.13.0..."
-      wget "https://www.antlr.org/download/antlr-4.13.0-complete.jar"
-      mv "./antlr-4.13.0-complete.jar" "./antlr.jar"
+      Write-host "Downloading ANTLR 4.13.1..."
+      wget "https://www.antlr.org/download/antlr-4.13.1-complete.jar"
+      mv "./antlr-4.13.1-complete.jar" "./antlr.jar"
    }
    
    java -jar ./antlr.jar -Dlanguage=CSharp ./Content/Crit.g4 -visitor -encoding utf8 -Xexact-output-dir -o ./Content/.antlr/

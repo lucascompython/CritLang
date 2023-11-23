@@ -1,3 +1,11 @@
+## 0.2.1 -> 0.2.2 
+Update from Antlr 13.0 to Antlr 13.1
+Update from .Net 7 to .Net 8
+Fix build script
+
+
+
+
 ## 0.2.0 -> 0.2.1
 This update mainly brings dictionaries but it also brings a lot of bug fixes and improvements.  
 Fixed the syntax warnings.  
